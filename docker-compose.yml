@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: book
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: "mysql://user:userpassword@db:3306/book"
+      SERVER_ADDRESS: ":8080"
+      LOG_LEVEL: "info"
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - BACKEND_URL=http://backend:8080/
+        - PORT=80
+    networks:
+      - app-network
+    ports:
+      - "80:80"
+
+networks:
+  app-network:
+
+volumes:
+  db_data:
