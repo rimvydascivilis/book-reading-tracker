@@ -24,7 +24,13 @@ jobs:
 
       - name: Lint
         uses: golangci/golangci-lint-action@v6
+        with:
+          working-directory: backend
       - name: Build
-        run: go build ./cmd/server/main.go
+        run: |
+          cd ${{ github.workspace }}/backend
+          go build ./cmd/server/main.go
       - name: Test with the Go CLI
-        run: go test ./...
+        run: |
+          cd ${{ github.workspace }}/backend
+          go test ./...
