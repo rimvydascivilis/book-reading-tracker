@@ -4,8 +4,9 @@ import {
   useRouteError,
 } from 'react-router-dom';
 import { Button } from "antd";
+import React from 'react';
 
-export default function ErrorPage() {
+const NotFoundPage: React.FC = () => {
   const navigate = useNavigate();
   const error = useRouteError() as Error;
 
@@ -14,10 +15,12 @@ export default function ErrorPage() {
   }
 
   return (
-    <div>
+    <div style={{ textAlign: 'center'}}>
       <h1>Something went wrong 😢</h1>
       <p>{error.data}</p>
       <Button onClick={() => navigate(-1)}> Go back</Button>
     </div>
   );
 };
+
+export default NotFoundPage;

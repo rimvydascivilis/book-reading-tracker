@@ -1,16 +1,20 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import routes from "./routes";
-import ErrorPage from "./components/pages/ErrorPage";
-import AppLayout from "./components/layouts/AppLayout";
+import AppLayout from "./components/Applayout/AppLayout";
+import React from "react";
 
-export default function App() {
+const NotFoundPage = React.lazy(() => import("./components/pages/404Page"));
+
+const App: React.FC = () => {
   const router = createBrowserRouter([
     {
       element: <AppLayout />,
-      errorElement: <ErrorPage />,
+      errorElement: <AppLayout><NotFoundPage /></AppLayout>,
       children: routes,
     },
   ]);
 
   return <RouterProvider router={router} />;
 }
+
+export default App;

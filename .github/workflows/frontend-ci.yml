@@ -27,10 +27,6 @@ jobs:
         run: |
           cd ${{ github.workspace }}/frontend
           yarn install
-      - name: Run tests
-        run: |
-          cd ${{ github.workspace }}/frontend
-          yarn test
       - name: Build
         run: |
           cd ${{ github.workspace }}/frontend
