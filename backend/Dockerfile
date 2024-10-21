@@ -1,18 +1,24 @@
-FROM golang:1.23-alpine AS build
+# Builder
+FROM golang:1.22.8-alpine3.20 AS builder
+
+RUN apk update && apk upgrade && \
+    apk --update add git make bash build-base
 
 WORKDIR /app
-
-COPY go.mod go.sum ./
-RUN go mod download
 
 COPY . .
 
-RUN go build -o main cmd/server/main.go
+RUN make build
 
+# Distribution
+FROM alpine:latest
 
-# Build the final image
-FROM alpine:3.20.1 AS app
+RUN apk update && apk upgrade && \
+    apk --update --no-cache add tzdata && \
+    mkdir /app 
 
-WORKDIR /app
-COPY --from=build /app/main /app/main
-CMD ["./main"]
+WORKDIR /app 
+
+COPY --from=builder /app/engine /app/
+
+CMD /app/engine

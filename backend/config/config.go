@@ -2,25 +2,34 @@ package config
 
 import (
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	ServerAddress string
-	DatabaseURL   string
-	LogLevel      string
+	ServerAddr string
+	DBUrl      string
+	LogLevel   string
 }
 
-func LoadConfig() Config {
-	return Config{
-		ServerAddress: getEnv("SERVER_ADDRESS", ":8080"),
-		DatabaseURL:   getEnv("DATABASE_URL", "postgres://user:pass@localhost/dbname"),
-		LogLevel:      getEnv("LOG_LEVEL", "debug"),
-	}
+func init() {
+	_ = godotenv.Load()
 }
 
-func getEnv(key, fallback string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
+func GetConfig() (Config, error) {
+	config := Config{
+		ServerAddr: GetEnvWithDefault("SERVER_ADDRESS", ":8080"),
+		DBUrl:      GetEnvWithDefault("DATABASE_URL", "user:userpassword@tcp(localhost:3306)/book"),
+		LogLevel:   GetEnvWithDefault("LOG_LEVEL", "debug"),
 	}
-	return fallback
+
+	return config, nil
+}
+
+func GetEnvWithDefault(v string, f string) string {
+	env := os.Getenv(v)
+	if env == "" {
+		return f
+	}
+	return env
 }
