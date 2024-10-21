@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:latest
+    image: mariadb:11.5
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: book
@@ -8,19 +8,32 @@ services:
       MYSQL_PASSWORD: userpassword
     volumes:
       - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: "mysql://user:userpassword@db:3306/book"
+      DATABASE_URL: "user:userpassword@tcp(db:3306)/book"
       SERVER_ADDRESS: ":8080"
       LOG_LEVEL: "info"
+    ports:
+      - "8080:8080"
     networks:
       - app-network
+    depends_on:
+      db:
+        condition: service_healthy
 
   frontend:
     build:
@@ -33,6 +46,8 @@ services:
       - app-network
     ports:
       - "80:80"
+    depends_on:
+      - backend
 
 networks:
   app-network:

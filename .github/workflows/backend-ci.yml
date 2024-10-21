@@ -21,16 +21,19 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.22.x'
-
+      - name: Install dependencies
+        run: |
+          cd ${{ github.workspace }}/backend
+          make install-deps
       - name: Lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          working-directory: backend
+        run: |
+          cd ${{ github.workspace }}/backend
+          make lint
       - name: Build
         run: |
           cd ${{ github.workspace }}/backend
-          go build ./cmd/server/main.go
-      - name: Test with the Go CLI
+          make build
+      - name: Test
         run: |
           cd ${{ github.workspace }}/backend
-          go test ./...
+          make tests
