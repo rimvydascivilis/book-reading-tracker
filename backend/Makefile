@@ -69,3 +69,7 @@ clean-artifacts: ## Removes Artifacts (*.out)
 	@printf "Cleanning artifacts... "
 	@rm -f *.out
 	@echo "done."
+
+mocks: $(MOCKERY)
+	@echo "Generating mocks"
+	@mockery --all
