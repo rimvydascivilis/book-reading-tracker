@@ -1,7 +1,6 @@
 import React from "react";
 import {Layout, Menu} from "antd";
 
-
 const {Sider} = Layout;
 
 const Sidebar: React.FC = () => {

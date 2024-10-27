@@ -1,6 +1,6 @@
 linters-settings:
   govet:
-    check-shadowing: true
+    shadow: true
     settings:
       printf:
         funcs:
@@ -58,12 +58,6 @@ linters:
   # - maligned
   # - prealloc
 
-run:
-  skip-dirs:
-    # - test/testdata_etc
-  skip-files:
-    - ".*_test\\.go$"
-
 issues:
-  exclude-rules:
-  #
+  exclude-files:
+    - ".*_test\\.go$"
