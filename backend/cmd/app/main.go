@@ -75,10 +75,11 @@ func main() {
 	userRepo := mariadbRepo.NewUserRepository(dbConn)
 
 	// Services
-	authSvc, err := auth.NewAuthService(userRepo, cfg.JWTSecret)
+	googleOauth2Svc, err := auth.NewGoogleOAuth2Service()
 	if err != nil {
-		utils.Fatal("failed to create auth service", err)
+		utils.Fatal("failed to create Google OAuth2 service", err)
 	}
+	authSvc := auth.NewAuthService(userRepo, googleOauth2Svc, cfg.JWTSecret)
 
 	// Handlers
 	authH := rest.NewAuthHandler(authSvc)

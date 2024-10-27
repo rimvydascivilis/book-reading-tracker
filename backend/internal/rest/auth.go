@@ -12,7 +12,6 @@ type ResponseError struct {
 	Message string `json:"message"`
 }
 
-//go:generate mockery --name AuthService
 type AuthService interface {
 	Login(ctx context.Context, googleOauthToken string) (string, error)
 }
