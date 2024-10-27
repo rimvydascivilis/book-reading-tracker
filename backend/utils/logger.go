@@ -8,10 +8,17 @@ import (
 
 var Logger *logrus.Logger
 
+func init() {
+	SetupLogger("DEBUG")
+}
+
 func SetupLogger(level string) {
-	Logger = logrus.New()
-	Logger.SetFormatter(&logrus.JSONFormatter{})
-	Logger.SetOutput(os.Stdout)
+	if Logger == nil {
+		// create a new logger
+		Logger = logrus.New()
+		Logger.SetFormatter(&logrus.JSONFormatter{})
+		Logger.SetOutput(os.Stdout)
+	}
 	setLogLevel(level)
 }
 

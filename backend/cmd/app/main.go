@@ -8,6 +8,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -19,13 +20,11 @@ import (
 )
 
 func main() {
-	cfg, err := config.GetConfig()
-	if err != nil {
-		fmt.Println("failed to get config", err)
-	}
+	cfg := config.LoadConfig()
 
 	utils.SetupLogger(cfg.LogLevel)
 
+	// Database connection
 	val := url.Values{}
 	val.Add("parseTime", "1")
 	val.Add("loc", "Europe/Vilnius")
@@ -47,13 +46,15 @@ func main() {
 	}()
 
 	e := echo.New()
+
+	// Middlewares
 	e.Use(middleware.CORS())
 	e.Use(middleware.Recover())
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Skipper: middleware.DefaultSkipper,
 		OnTimeoutRouteErrorHandler: func(err error, c echo.Context) {
 			msg := fmt.Sprintf("request timed out on route %s", c.Path())
-			utils.Fatal(msg, err)
+			utils.Error(msg, err)
 		},
 		Timeout: 5 * time.Second,
 	}))
@@ -70,11 +71,30 @@ func main() {
 		},
 	}))
 
+	// Repositories
 	userRepo := mariadbRepo.NewUserRepository(dbConn)
 
-	authSvc := auth.NewAuthService(userRepo)
+	// Services
+	googleOauth2Svc, err := auth.NewGoogleOAuth2Service()
+	if err != nil {
+		utils.Fatal("failed to create Google OAuth2 service", err)
+	}
+	authSvc := auth.NewAuthService(userRepo, googleOauth2Svc, cfg.JWTSecret)
 
-	rest.NewAuthHandler(e, authSvc)
+	// Handlers
+	authH := rest.NewAuthHandler(authSvc)
+
+	// Route groups
+	api := e.Group("/api")
+	authenticatedApi := api.Group("", echojwt.WithConfig(echojwt.Config{SigningKey: []byte(cfg.JWTSecret)}))
+
+	// Unauthenticated routes
+	api.POST("/auth/login", authH.Login)
+
+	// Authenticated routes
+	authenticatedApi.POST("/", func(c echo.Context) error {
+		return c.String(200, "authenticated")
+	})
 
 	log.Fatal(e.Start(cfg.ServerAddr))
 }

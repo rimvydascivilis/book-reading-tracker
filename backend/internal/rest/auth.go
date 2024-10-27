@@ -1,39 +1,57 @@
 package rest
 
 import (
+	"book-tracker/utils"
 	"context"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
-
-	"book-tracker/domain"
 )
 
 type ResponseError struct {
 	Message string `json:"message"`
 }
 
-//go:generate mockery --name AuthService
 type AuthService interface {
-	Login(ctx context.Context, token string) (domain.User, error)
-	Logout(ctx context.Context, id string) error
+	Login(ctx context.Context, googleOauthToken string) (string, error)
 }
 
 type AuthHandler struct {
 	AuthSvc AuthService
 }
 
-func NewAuthHandler(e *echo.Echo, as AuthService) {
+func NewAuthHandler(as AuthService) *AuthHandler {
 	handler := &AuthHandler{
 		AuthSvc: as,
 	}
-	e.POST("/login", handler.Login)
-	e.POST("/logout", handler.Logout)
+	return handler
+}
+
+type LoginRequest struct {
+	Token string `json:"token"`
 }
 
 func (a *AuthHandler) Login(c echo.Context) error {
-	return nil
-}
+	ctx := c.Request().Context()
+	if ctx == nil {
+		ctx = context.Background()
+	}
 
-func (a *AuthHandler) Logout(c echo.Context) error {
-	return nil
+	var req LoginRequest
+	if err := c.Bind(&req); err != nil {
+		utils.Error("failed to bind request", err)
+		return c.JSON(http.StatusBadRequest, ResponseError{Message: "invalid request format"})
+	}
+
+	if req.Token == "" {
+		return c.JSON(http.StatusBadRequest, ResponseError{Message: "missing token"})
+	}
+
+	jwtToken, err := a.AuthSvc.Login(ctx, req.Token)
+	if err != nil {
+		utils.Error("failed to login", err)
+		return c.JSON(http.StatusInternalServerError, ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"token": jwtToken})
 }

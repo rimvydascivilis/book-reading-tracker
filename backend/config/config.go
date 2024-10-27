@@ -1,29 +1,23 @@
 package config
 
 import (
+	"book-tracker/domain"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
-type Config struct {
-	ServerAddr string
-	DBUrl      string
-	LogLevel   string
-}
-
-func init() {
+func LoadConfig() domain.Config {
 	_ = godotenv.Load()
-}
 
-func GetConfig() (Config, error) {
-	config := Config{
+	config := domain.Config{
 		ServerAddr: GetEnvWithDefault("SERVER_ADDRESS", ":8080"),
 		DBUrl:      GetEnvWithDefault("DATABASE_URL", "user:userpassword@tcp(localhost:3306)/book"),
-		LogLevel:   GetEnvWithDefault("LOG_LEVEL", "debug"),
+		LogLevel:   GetEnvWithDefault("LOG_LEVEL", "INFO"),
+		JWTSecret:  GetEnvWithDefault("JWT_SECRET", "Sup3rS3cr3t"),
 	}
 
-	return config, nil
+	return config
 }
 
 func GetEnvWithDefault(v string, f string) string {

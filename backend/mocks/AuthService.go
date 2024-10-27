@@ -3,7 +3,6 @@
 package mocks
 
 import (
-	domain "book-tracker/domain"
 	context "context"
 
 	mock "github.com/stretchr/testify/mock"
@@ -14,50 +13,32 @@ type AuthService struct {
 	mock.Mock
 }
 
-// Login provides a mock function with given fields: ctx, token
-func (_m *AuthService) Login(ctx context.Context, token string) (domain.User, error) {
-	ret := _m.Called(ctx, token)
+// Login provides a mock function with given fields: ctx, googleOauthToken
+func (_m *AuthService) Login(ctx context.Context, googleOauthToken string) (string, error) {
+	ret := _m.Called(ctx, googleOauthToken)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Login")
 	}
 
-	var r0 domain.User
+	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (domain.User, error)); ok {
-		return rf(ctx, token)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (string, error)); ok {
+		return rf(ctx, googleOauthToken)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) domain.User); ok {
-		r0 = rf(ctx, token)
+	if rf, ok := ret.Get(0).(func(context.Context, string) string); ok {
+		r0 = rf(ctx, googleOauthToken)
 	} else {
-		r0 = ret.Get(0).(domain.User)
+		r0 = ret.Get(0).(string)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, token)
+		r1 = rf(ctx, googleOauthToken)
 	} else {
 		r1 = ret.Error(1)
 	}
 
 	return r0, r1
-}
-
-// Logout provides a mock function with given fields: ctx, id
-func (_m *AuthService) Logout(ctx context.Context, id string) error {
-	ret := _m.Called(ctx, id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for Logout")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
-		r0 = rf(ctx, id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
 }
 
 // NewAuthService creates a new instance of AuthService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
