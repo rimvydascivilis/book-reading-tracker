@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/rimvydascivilis/book-tracker/backend/domain"
 	"github.com/rimvydascivilis/book-tracker/backend/mocks"
 	"github.com/stretchr/testify/assert"

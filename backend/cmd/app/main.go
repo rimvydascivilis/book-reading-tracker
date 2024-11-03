@@ -8,8 +8,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/golang-jwt/jwt/v5"
-	echojwt "github.com/labstack/echo-jwt"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -17,6 +16,7 @@ import (
 	mariadbRepo "github.com/rimvydascivilis/book-tracker/backend/internal/repository/mariadb"
 	"github.com/rimvydascivilis/book-tracker/backend/internal/rest"
 	"github.com/rimvydascivilis/book-tracker/backend/services/auth"
+	"github.com/rimvydascivilis/book-tracker/backend/services/book"
 	"github.com/rimvydascivilis/book-tracker/backend/services/user"
 	"github.com/rimvydascivilis/book-tracker/backend/utils"
 )
@@ -65,6 +65,7 @@ func main() {
 		LogStatus: true,
 		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
 			utils.Info("request completed", map[string]interface{}{
+				"method": c.Request().Method,
 				"uri":    values.URI,
 				"status": values.Status,
 			})
@@ -75,6 +76,7 @@ func main() {
 
 	// Repositories
 	userRepo := mariadbRepo.NewUserRepository(dbConn)
+	bookRepo := mariadbRepo.NewBookRepository(dbConn)
 
 	// Services
 	googleOauth2Svc, err := auth.NewGoogleOAuth2Service()
@@ -84,9 +86,11 @@ func main() {
 	jwtSvc := auth.NewJWTService(cfg.JWTSecret, userRepo)
 	userSvc := user.NewUserService(userRepo)
 	authSvc := auth.NewAuthService(userSvc, googleOauth2Svc, jwtSvc)
+	bookSvc := book.NewBookService(bookRepo)
 
 	// Handlers
 	authH := rest.NewAuthHandler(authSvc)
+	bookH := rest.NewBookHandler(bookSvc)
 
 	// Route groups
 	api := e.Group("/api")
@@ -99,26 +103,10 @@ func main() {
 	api.POST("/auth/login", authH.Login)
 
 	// Authenticated routes
-	authenticatedApi.POST("/", func(c echo.Context) error {
-		token, ok := c.Get("user").(*jwt.Token)
-		if !ok {
-			return c.String(500, "failed to get user from context")
-		}
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			return c.String(500, "failed to get claims from token")
-		}
-		userID, ok := claims["sub"].(float64)
-		if !ok {
-			return c.String(500, "failed to get user ID from claims")
-		}
-
-		utils.Info("authenticated user", map[string]interface{}{
-			"userID": userID,
-		})
-
-		return c.String(200, "authenticated")
-	})
+	authenticatedApi.GET("/books", bookH.GetBooks)
+	authenticatedApi.POST("/books", bookH.CreateBook)
+	authenticatedApi.PUT("/books/:id", bookH.UpdateBook)
+	authenticatedApi.DELETE("/books/:id", bookH.DeleteBook)
 
 	log.Fatal(e.Start(cfg.ServerAddr))
 }

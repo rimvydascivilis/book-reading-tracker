@@ -88,7 +88,7 @@ func TestAuthHandler_Login_Failure(t *testing.T) {
 
 	if assert.NoError(t, handler.Login(c)) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
-		assert.JSONEq(t, `{"message":"assert.AnError general error for testing"}`, rec.Body.String()) // Updated expected message
+		assert.JSONEq(t, `{"message":"failed to login"}`, rec.Body.String()) // Updated expected message
 	}
 
 	mockAuthService.AssertExpectations(t)
