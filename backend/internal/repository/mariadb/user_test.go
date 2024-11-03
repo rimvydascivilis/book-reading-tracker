@@ -1,23 +1,28 @@
 package mariadb_test
 
 import (
-	"book-tracker/domain"
-	"book-tracker/internal/repository/mariadb"
 	"context"
 	"database/sql"
 	"testing"
 	"time"
 
+	"github.com/rimvydascivilis/book-tracker/backend/domain"
+	"github.com/rimvydascivilis/book-tracker/backend/internal/repository/mariadb"
+
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserRepository_GetByEmail_Success(t *testing.T) {
+func setupUserRepository(t *testing.T) (*mariadb.UserRepository, sqlmock.Sqlmock) {
 	db, mock, err := sqlmock.New()
 	assert.NoError(t, err)
-	defer db.Close()
-
+	t.Cleanup(func() { db.Close() })
 	userRepo := mariadb.NewUserRepository(db)
+	return userRepo, mock
+}
+
+func TestUserRepository_GetByEmail_Success(t *testing.T) {
+	userRepo, mock := setupUserRepository(t)
 
 	ctx := context.Background()
 	testEmail := "test@example.com"
@@ -39,16 +44,11 @@ func TestUserRepository_GetByEmail_Success(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, testUser, user)
-
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
 func TestUserRepository_GetByEmail_NotFound(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	assert.NoError(t, err)
-	defer db.Close()
-
-	userRepo := mariadb.NewUserRepository(db)
+	userRepo, mock := setupUserRepository(t)
 
 	ctx := context.Background()
 	testEmail := "nonexistent@example.com"
@@ -63,16 +63,55 @@ func TestUserRepository_GetByEmail_NotFound(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, domain.ErrUserNotFound, err)
 	assert.Equal(t, domain.User{}, user)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
 
+func TestUserRepository_GetByID_Success(t *testing.T) {
+	userRepo, mock := setupUserRepository(t)
+
+	ctx := context.Background()
+	testID := int64(1)
+	testUser := domain.User{
+		ID:    testID,
+		Email: "test@example.com",
+	}
+
+	rows := sqlmock.NewRows([]string{"id", "email", "created_at"}).
+		AddRow(testUser.ID, testUser.Email, testUser.CreatedAt)
+
+	mock.ExpectPrepare("SELECT id, email, created_at FROM user WHERE id = ?").
+		ExpectQuery().
+		WithArgs(testID).
+		WillReturnRows(rows)
+
+	user, err := userRepo.GetByID(ctx, testID)
+
+	assert.NoError(t, err)
+	assert.Equal(t, testUser, user)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestUserRepository_GetByID_NotFound(t *testing.T) {
+	userRepo, mock := setupUserRepository(t)
+
+	ctx := context.Background()
+	testID := int64(999)
+
+	mock.ExpectPrepare("SELECT id, email, created_at FROM user WHERE id = ?").
+		ExpectQuery().
+		WithArgs(testID).
+		WillReturnError(sql.ErrNoRows)
+
+	user, err := userRepo.GetByID(ctx, testID)
+
+	assert.Error(t, err)
+	assert.Equal(t, domain.ErrUserNotFound, err)
+	assert.Equal(t, domain.User{}, user)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
 func TestUserRepository_CreateUser_Success(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	assert.NoError(t, err)
-	defer db.Close()
-
-	userRepo := mariadb.NewUserRepository(db)
+	userRepo, mock := setupUserRepository(t)
 
 	ctx := context.Background()
 	testUser := domain.User{
@@ -90,6 +129,5 @@ func TestUserRepository_CreateUser_Success(t *testing.T) {
 	assert.Equal(t, int64(1), createdUser.ID)
 	assert.Equal(t, testUser.Email, createdUser.Email)
 	assert.NotZero(t, createdUser.CreatedAt)
-
 	assert.NoError(t, mock.ExpectationsWereMet())
 }

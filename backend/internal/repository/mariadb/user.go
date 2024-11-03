@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"book-tracker/domain"
+	"github.com/rimvydascivilis/book-tracker/backend/domain"
 )
 
 type UserRepository struct {
@@ -39,6 +39,11 @@ func (m *UserRepository) getOne(ctx context.Context, query string, args ...inter
 func (m *UserRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
 	query := `SELECT id, email, created_at FROM user WHERE email = ?`
 	return m.getOne(ctx, query, email)
+}
+
+func (m *UserRepository) GetByID(ctx context.Context, id int64) (domain.User, error) {
+	query := `SELECT id, email, created_at FROM user WHERE id = ?`
+	return m.getOne(ctx, query, id)
 }
 
 func (m *UserRepository) CreateUser(ctx context.Context, u domain.User) (domain.User, error) {

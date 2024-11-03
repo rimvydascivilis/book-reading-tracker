@@ -8,15 +8,17 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"book-tracker/config"
-	mariadbRepo "book-tracker/internal/repository/mariadb"
-	"book-tracker/internal/rest"
-	"book-tracker/services/auth"
-	"book-tracker/utils"
+	"github.com/rimvydascivilis/book-tracker/backend/config"
+	mariadbRepo "github.com/rimvydascivilis/book-tracker/backend/internal/repository/mariadb"
+	"github.com/rimvydascivilis/book-tracker/backend/internal/rest"
+	"github.com/rimvydascivilis/book-tracker/backend/services/auth"
+	"github.com/rimvydascivilis/book-tracker/backend/services/user"
+	"github.com/rimvydascivilis/book-tracker/backend/utils"
 )
 
 func main() {
@@ -79,20 +81,42 @@ func main() {
 	if err != nil {
 		utils.Fatal("failed to create Google OAuth2 service", err)
 	}
-	authSvc := auth.NewAuthService(userRepo, googleOauth2Svc, cfg.JWTSecret)
+	jwtSvc := auth.NewJWTService(cfg.JWTSecret, userRepo)
+	userSvc := user.NewUserService(userRepo)
+	authSvc := auth.NewAuthService(userSvc, googleOauth2Svc, jwtSvc)
 
 	// Handlers
 	authH := rest.NewAuthHandler(authSvc)
 
 	// Route groups
 	api := e.Group("/api")
-	authenticatedApi := api.Group("", echojwt.WithConfig(echojwt.Config{SigningKey: []byte(cfg.JWTSecret)}))
+	authenticatedApi := api.Group("", echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(cfg.JWTSecret),
+		ContextKey: "user",
+	}))
 
 	// Unauthenticated routes
 	api.POST("/auth/login", authH.Login)
 
 	// Authenticated routes
 	authenticatedApi.POST("/", func(c echo.Context) error {
+		token, ok := c.Get("user").(*jwt.Token)
+		if !ok {
+			return c.String(500, "failed to get user from context")
+		}
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			return c.String(500, "failed to get claims from token")
+		}
+		userID, ok := claims["sub"].(float64)
+		if !ok {
+			return c.String(500, "failed to get user ID from claims")
+		}
+
+		utils.Info("authenticated user", map[string]interface{}{
+			"userID": userID,
+		})
+
 		return c.String(200, "authenticated")
 	})
 

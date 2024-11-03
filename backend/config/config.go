@@ -1,8 +1,9 @@
 package config
 
 import (
-	"book-tracker/domain"
 	"os"
+
+	"github.com/rimvydascivilis/book-tracker/backend/domain"
 
 	"github.com/joho/godotenv"
 )

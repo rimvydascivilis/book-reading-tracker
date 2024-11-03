@@ -1,9 +1,11 @@
 package rest
 
 import (
-	"book-tracker/utils"
 	"context"
 	"net/http"
+
+	"github.com/rimvydascivilis/book-tracker/backend/domain"
+	"github.com/rimvydascivilis/book-tracker/backend/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -12,15 +14,11 @@ type ResponseError struct {
 	Message string `json:"message"`
 }
 
-type AuthService interface {
-	Login(ctx context.Context, googleOauthToken string) (string, error)
-}
-
 type AuthHandler struct {
-	AuthSvc AuthService
+	AuthSvc domain.AuthService
 }
 
-func NewAuthHandler(as AuthService) *AuthHandler {
+func NewAuthHandler(as domain.AuthService) *AuthHandler {
 	handler := &AuthHandler{
 		AuthSvc: as,
 	}

@@ -1,4 +1,4 @@
-module book-tracker
+module github.com/rimvydascivilis/book-tracker/backend
 
 go 1.22
 

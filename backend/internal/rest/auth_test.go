@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"book-tracker/internal/rest"
-	"book-tracker/mocks"
+	"github.com/rimvydascivilis/book-tracker/backend/internal/rest"
+	"github.com/rimvydascivilis/book-tracker/backend/mocks"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"

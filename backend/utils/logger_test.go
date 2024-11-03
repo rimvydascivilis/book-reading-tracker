@@ -1,12 +1,13 @@
 package utils_test
 
 import (
-	"book-tracker/utils"
 	"bytes"
 	"errors"
 	"os"
 	"os/exec"
 	"testing"
+
+	"github.com/rimvydascivilis/book-tracker/backend/utils"
 
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
