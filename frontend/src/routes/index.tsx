@@ -3,7 +3,9 @@ import PathConstants from "./PathConstants";
 import ProtectedRoute from "./../components/common/Protected";
 
 const Login = React.lazy(() => import("../components/pages/login/LoginPage"));
-const Library = React.lazy(() => import("../components/pages/library/LibraryPage"));
+const Library = React.lazy(
+  () => import("../components/pages/library/LibraryPage"),
+);
 
 const routes = [
   {
