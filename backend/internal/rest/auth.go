@@ -10,10 +10,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type ResponseError struct {
-	Message string `json:"message"`
-}
-
 type AuthHandler struct {
 	AuthSvc domain.AuthService
 }
@@ -48,7 +44,7 @@ func (a *AuthHandler) Login(c echo.Context) error {
 	jwtToken, err := a.AuthSvc.Login(ctx, req.Token)
 	if err != nil {
 		utils.Error("failed to login", err)
-		return c.JSON(http.StatusInternalServerError, ResponseError{Message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, ResponseError{Message: "failed to login"})
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"token": jwtToken})

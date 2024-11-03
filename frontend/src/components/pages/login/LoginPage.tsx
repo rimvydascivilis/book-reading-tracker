@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
   };
 
   if (isAuthenticated) {
-    return <Navigate to={PathConstants.HOME} />;
+    return <Navigate to={PathConstants.LIBRARY} />;
   }
 
   return (

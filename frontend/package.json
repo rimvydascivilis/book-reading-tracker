@@ -27,7 +27,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src/**/*.{ts,tsx}",
-    "prettier:check": "prettier --check src/**/*.{ts,tsx}"
+    "prettier:check": "prettier --check src/**/*.{ts,tsx}",
+    "prettier:write": "prettier --write src/**/*.{ts,tsx}"
   },
   "browserslist": {
     "production": [
