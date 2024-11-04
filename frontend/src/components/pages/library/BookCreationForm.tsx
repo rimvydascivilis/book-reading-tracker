@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Input, Button, message} from "antd";
-import { MAX_BOOK_TITLE_LENGTH } from "../../../constants";
+import {MAX_BOOK_TITLE_LENGTH} from "../../../constants";
 
 interface BookCreationFormProps {
   onCreate: (title: string) => void;
