@@ -7,18 +7,20 @@ import (
 )
 
 type bookService struct {
-	bookRepo domain.BookRepository
+	bookRepo      domain.BookRepository
+	validationSvc domain.ValidationService
 }
 
-func NewBookService(repo domain.BookRepository) *bookService {
+func NewBookService(repo domain.BookRepository, validator domain.ValidationService) domain.BookService {
 	return &bookService{
-		bookRepo: repo,
+		bookRepo:      repo,
+		validationSvc: validator,
 	}
 }
 
 func (s *bookService) CreateBook(ctx context.Context, userID int64, book domain.Book) (domain.Book, error) {
-	if book.Title == "" {
-		return domain.Book{}, domain.ErrInvalidBook
+	if err := s.validationSvc.ValidateStruct(book); err != nil {
+		return domain.Book{}, err
 	}
 
 	return s.bookRepo.CreateBook(ctx, userID, book)
@@ -34,12 +36,6 @@ func (s *bookService) GetBooks(ctx context.Context, userID, page, limit int64) (
 	if limit > 100 {
 		limit = 100
 	}
-	offset := (page - 1) * limit
-
-	books, err := s.bookRepo.GetBooksByUser(ctx, userID, offset, limit)
-	if err != nil {
-		return nil, false, err
-	}
 
 	totalCount, err := s.bookRepo.CountBooksByUser(ctx, userID)
 	if err != nil {
@@ -47,6 +43,15 @@ func (s *bookService) GetBooks(ctx context.Context, userID, page, limit int64) (
 	}
 
 	hasMore := totalCount > page*limit
+	if !hasMore {
+		return []domain.Book{}, false, nil
+	}
+
+	offset := (page - 1) * limit
+	books, err := s.bookRepo.GetBooksByUser(ctx, userID, offset, limit)
+	if err != nil {
+		return nil, false, err
+	}
 
 	return books, hasMore, nil
 }
@@ -57,14 +62,18 @@ func (s *bookService) UpdateBook(ctx context.Context, userID int64, book domain.
 		return domain.Book{}, err
 	}
 
-	if book.Title == "" {
-		book.Title = currBook.Title
+	if book.Title != "" {
+		currBook.Title = book.Title
 	}
-	if book.Rating == nil {
-		book.Rating = currBook.Rating
+	if book.Rating != 0 {
+		currBook.Rating = book.Rating
 	}
 
-	return s.bookRepo.UpdateBook(ctx, userID, book)
+	if err := s.validationSvc.ValidateStruct(currBook); err != nil {
+		return domain.Book{}, err
+	}
+
+	return s.bookRepo.UpdateBook(ctx, userID, currBook)
 }
 
 func (s *bookService) DeleteBook(ctx context.Context, userID, bookID int64) error {

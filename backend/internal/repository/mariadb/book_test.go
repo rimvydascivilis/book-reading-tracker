@@ -3,6 +3,7 @@ package mariadb_test
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"testing"
 	"time"
 
@@ -23,12 +24,10 @@ func setupBookRepository(t *testing.T) (*mariadb.BookRepository, sqlmock.Sqlmock
 func TestBookRepository_GetBooksByUser_Success(t *testing.T) {
 	bookRepo, mock := setupBookRepository(t)
 
-	var rating float64 = 5
-	var rating2 float64 = 4
 	ctx := context.Background()
 	testBooks := []domain.Book{
-		{ID: 1, Title: "Book 1", Rating: &rating, CreatedAt: time.Now()},
-		{ID: 2, Title: "Book 2", Rating: &rating2, CreatedAt: time.Now()},
+		{ID: 1, Title: "Book 1", Rating: 5, CreatedAt: time.Now()},
+		{ID: 2, Title: "Book 2", Rating: 4, CreatedAt: time.Now()},
 	}
 
 	rows := sqlmock.NewRows([]string{"id", "title", "rating", "created_at"}).
@@ -68,11 +67,10 @@ func TestBookRepository_CountBooksByUser_Success(t *testing.T) {
 func TestBookRepository_CreateBook_Success(t *testing.T) {
 	bookRepo, mock := setupBookRepository(t)
 
-	var rating float64 = 5
 	ctx := context.Background()
 	newBook := domain.Book{
 		Title:     "New Book",
-		Rating:    &rating,
+		Rating:    5,
 		CreatedAt: time.Now(),
 	}
 
@@ -94,8 +92,7 @@ func TestBookRepository_GetBookByUserID_Success(t *testing.T) {
 	bookRepo, mock := setupBookRepository(t)
 
 	ctx := context.Background()
-	var rating float64 = 5
-	testBook := domain.Book{ID: 1, Title: "Book 1", Rating: &rating, CreatedAt: time.Now()}
+	testBook := domain.Book{ID: 1, Title: "Book 1", Rating: 5, CreatedAt: time.Now()}
 
 	rows := sqlmock.NewRows([]string{"id", "title", "rating", "created_at"}).
 		AddRow(testBook.ID, testBook.Title, testBook.Rating, testBook.CreatedAt)
@@ -125,7 +122,7 @@ func TestBookRepository_GetBookByUserID_NotFound(t *testing.T) {
 	book, err := bookRepo.GetBookByUserID(ctx, 1, 99)
 
 	assert.Error(t, err)
-	assert.Equal(t, domain.ErrBookNotFound, err)
+	assert.Equal(t, fmt.Errorf("%w: %s", domain.ErrRecordNotFound, "book"), err)
 	assert.Equal(t, domain.Book{}, book)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
@@ -134,8 +131,7 @@ func TestBookRepository_UpdateBook_Success(t *testing.T) {
 	bookRepo, mock := setupBookRepository(t)
 
 	ctx := context.Background()
-	var rating float64 = 5
-	updateBook := domain.Book{ID: 1, Title: "Updated Book", Rating: &rating}
+	updateBook := domain.Book{ID: 1, Title: "Updated Book", Rating: 5}
 
 	mock.ExpectPrepare(`UPDATE book SET title = \?, rating = \? WHERE user_id = \? AND id = \?`).
 		ExpectExec().

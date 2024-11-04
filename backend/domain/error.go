@@ -1,9 +1,11 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
-	ErrBookNotFound = errors.New("book not found")
-	ErrUserNotFound = errors.New("user not found")
-	ErrInvalidBook  = errors.New("invalid book")
+	ErrValidation     = errors.New("validation error")
+	ErrAuthentication = errors.New("authentication error")
+	ErrRecordNotFound = errors.New("record not found")
 )

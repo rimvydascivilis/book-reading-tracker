@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {List, Rate, Button, Modal} from "antd";
 import {IBook} from "../../../types/bookTypes";
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
+import { MAX_BOOK_TITLE_LENGTH } from "../../../constants";
 
 interface BookItemProps {
   book: IBook;
@@ -49,6 +50,7 @@ const BookItem: React.FC<BookItemProps> = ({
           <input
             value={title}
             onChange={e => setTitle(e.target.value)} // Update local title state
+            maxLength={MAX_BOOK_TITLE_LENGTH}
             onBlur={handleEditToggle}
             style={{
               border: "1px solid #d9d9d9",

@@ -39,8 +39,7 @@ func (a *BookHandler) GetBooks(c echo.Context) error {
 
 	books, hasMore, err := a.BookSvc.GetBooks(ctx, userID, page, limit)
 	if err != nil {
-		utils.Error("failed to get books", err)
-		return c.JSON(http.StatusInternalServerError, ResponseError{Message: "failed to get books"})
+		return handleSeriviceError(c, err)
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
@@ -66,16 +65,10 @@ func (a *BookHandler) CreateBook(c echo.Context) error {
 		utils.Error("failed to get user id from token", err)
 		return c.JSON(http.StatusUnauthorized, ResponseError{Message: "Invalid token"})
 	}
-	utils.Info("user id", map[string]interface{}{"userID": userID})
 
 	book, err := a.BookSvc.CreateBook(ctx, userID, req)
-	if err == domain.ErrInvalidBook {
-		return c.JSON(http.StatusBadRequest, ResponseError{Message: "invalid request format"})
-	}
-
 	if err != nil {
-		utils.Error("failed to create book", err)
-		return c.JSON(http.StatusInternalServerError, ResponseError{Message: "failed to create book"})
+		return handleSeriviceError(c, err)
 	}
 
 	return c.JSON(http.StatusCreated, book)
@@ -109,8 +102,7 @@ func (a *BookHandler) UpdateBook(c echo.Context) error {
 
 	book, err := a.BookSvc.UpdateBook(ctx, userID, req)
 	if err != nil {
-		utils.Error("failed to update book", err)
-		return c.JSON(http.StatusInternalServerError, ResponseError{Message: "failed to update book"})
+		return handleSeriviceError(c, err)
 	}
 
 	return c.JSON(http.StatusOK, book)
@@ -136,8 +128,7 @@ func (a *BookHandler) DeleteBook(c echo.Context) error {
 
 	err = a.BookSvc.DeleteBook(ctx, userID, bookID)
 	if err != nil {
-		utils.Error("failed to delete book", err)
-		return c.JSON(http.StatusInternalServerError, ResponseError{Message: "failed to delete book"})
+		return handleSeriviceError(c, err)
 	}
 
 	return c.NoContent(http.StatusNoContent)

@@ -3,10 +3,12 @@ package rest_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/rimvydascivilis/book-tracker/backend/domain"
 	"github.com/rimvydascivilis/book-tracker/backend/internal/rest"
 	"github.com/rimvydascivilis/book-tracker/backend/mocks"
 
@@ -84,11 +86,11 @@ func TestAuthHandler_Login_Failure(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	mockAuthService.On("Login", mock.Anything, "invalid_token").Return("", assert.AnError)
+	mockAuthService.On("Login", mock.Anything, "invalid_token").Return("", fmt.Errorf("%w: %s", domain.ErrAuthentication, "invalid token"))
 
 	if assert.NoError(t, handler.Login(c)) {
-		assert.Equal(t, http.StatusInternalServerError, rec.Code)
-		assert.JSONEq(t, `{"message":"failed to login"}`, rec.Body.String()) // Updated expected message
+		assert.Equal(t, http.StatusUnauthorized, rec.Code)
+		assert.JSONEq(t, `{"message":"authentication error: invalid token"}`, rec.Body.String())
 	}
 
 	mockAuthService.AssertExpectations(t)

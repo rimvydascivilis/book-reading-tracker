@@ -43,8 +43,7 @@ func (a *AuthHandler) Login(c echo.Context) error {
 
 	jwtToken, err := a.AuthSvc.Login(ctx, req.Token)
 	if err != nil {
-		utils.Error("failed to login", err)
-		return c.JSON(http.StatusInternalServerError, ResponseError{Message: "failed to login"})
+		return handleSeriviceError(c, err)
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"token": jwtToken})

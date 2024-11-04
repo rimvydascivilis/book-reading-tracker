@@ -3,6 +3,7 @@ package mariadb
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/rimvydascivilis/book-tracker/backend/domain"
@@ -94,7 +95,7 @@ func (m *BookRepository) GetBookByUserID(ctx context.Context, userID, bookID int
 	b := domain.Book{}
 	err = row.Scan(&b.ID, &b.Title, &b.Rating, &b.CreatedAt)
 	if err == sql.ErrNoRows {
-		return domain.Book{}, domain.ErrBookNotFound
+		return domain.Book{}, fmt.Errorf("%w: %s", domain.ErrRecordNotFound, "book")
 	}
 	if err != nil {
 		return domain.Book{}, err

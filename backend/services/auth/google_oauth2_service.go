@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/rimvydascivilis/book-tracker/backend/domain"
 	"google.golang.org/api/oauth2/v1"
 	"google.golang.org/api/option"
 )
@@ -29,8 +30,11 @@ func (g *GoogleOAuth2Service) ValidateToken(token string) (string, error) {
 	tokenInfoCall.IdToken(token)
 
 	tokenInfo, err := tokenInfoCall.Do()
-	if err != nil || tokenInfo.Email == "" {
-		return "", fmt.Errorf("failed to validate OAuth token: %w", err)
+	if err != nil {
+		return "", fmt.Errorf("%w: %s", domain.ErrAuthentication, err)
+	}
+	if tokenInfo.Email == "" {
+		return "", fmt.Errorf("%w: %s", domain.ErrAuthentication, "oauth token does not contain email")
 	}
 
 	return tokenInfo.Email, nil

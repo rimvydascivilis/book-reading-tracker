@@ -61,7 +61,7 @@ func TestUserRepository_GetByEmail_NotFound(t *testing.T) {
 	user, err := userRepo.GetByEmail(ctx, testEmail)
 
 	assert.Error(t, err)
-	assert.Equal(t, domain.ErrUserNotFound, err)
+	assert.Equal(t, domain.ErrRecordNotFound, err)
 	assert.Equal(t, domain.User{}, user)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
@@ -105,7 +105,7 @@ func TestUserRepository_GetByID_NotFound(t *testing.T) {
 	user, err := userRepo.GetByID(ctx, testID)
 
 	assert.Error(t, err)
-	assert.Equal(t, domain.ErrUserNotFound, err)
+	assert.Equal(t, domain.ErrRecordNotFound, err)
 	assert.Equal(t, domain.User{}, user)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }

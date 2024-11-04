@@ -3,6 +3,7 @@ package rest_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -33,11 +34,9 @@ func TestGetBooks(t *testing.T) {
 	c := e.NewContext(req, rec)
 	c.Set("user", &mockJWTToken)
 
-	var rating float64 = 5
-	var rating2 float64 = 4
 	books := []domain.Book{
-		{ID: 1, Title: "Book One", Rating: &rating},
-		{ID: 2, Title: "Book Two", Rating: &rating2},
+		{ID: 1, Title: "Book One", Rating: 5},
+		{ID: 2, Title: "Book Two", Rating: 4},
 	}
 	mockSvc.On("GetBooks", mock.Anything, int64(1), int64(1), int64(2)).Return(books, true, nil)
 
@@ -58,8 +57,7 @@ func TestCreateBook(t *testing.T) {
 	handler := rest.NewBookHandler(mockSvc)
 
 	e := echo.New()
-	var rating float64 = 5
-	book := domain.Book{Title: "New Book", Rating: &rating}
+	book := domain.Book{Title: "New Book", Rating: 5}
 	body, _ := json.Marshal(book)
 
 	req := httptest.NewRequest(http.MethodPost, "/books", bytes.NewReader(body))
@@ -83,13 +81,32 @@ func TestCreateBook(t *testing.T) {
 	assert.Equal(t, createdBook, responseBook)
 }
 
+func TestCreateBook_InvalidInput(t *testing.T) {
+	mockSvc := new(mocks.BookService)
+	handler := rest.NewBookHandler(mockSvc)
+
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/books", bytes.NewReader([]byte(`{"rating": 5}`))) // Missing Title
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.Set("user", &mockJWTToken)
+
+	mockSvc.On("CreateBook", mock.Anything, int64(1), domain.Book{Rating: 5}).Return(domain.Book{}, fmt.Errorf("%w: %s", domain.ErrValidation, "Title"))
+
+	err := handler.CreateBook(c)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusBadRequest, rec.Code)
+	assert.Contains(t, rec.Body.String(), "Title")
+}
+
 func TestUpdateBook(t *testing.T) {
 	mockSvc := new(mocks.BookService)
 	handler := rest.NewBookHandler(mockSvc)
 
 	e := echo.New()
-	var rating float64 = 5
-	book := domain.Book{ID: 1, Title: "Updated Title", Rating: &rating}
+	book := domain.Book{ID: 1, Title: "Updated Title", Rating: 5}
 	body, _ := json.Marshal(book)
 
 	req := httptest.NewRequest(http.MethodPut, "/books/1", bytes.NewReader(body))
@@ -113,6 +130,31 @@ func TestUpdateBook(t *testing.T) {
 	assert.Equal(t, book, responseBook)
 }
 
+func TestUpdateBook_InvalidRating(t *testing.T) {
+	mockSvc := new(mocks.BookService)
+	handler := rest.NewBookHandler(mockSvc)
+
+	e := echo.New()
+	book := domain.Book{ID: 1, Title: "Updated Title", Rating: 101} // Invalid Rating
+	body, _ := json.Marshal(book)
+
+	req := httptest.NewRequest(http.MethodPut, "/books/1", bytes.NewReader(body))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.Set("user", &mockJWTToken)
+	c.SetParamNames("id")
+	c.SetParamValues(strconv.FormatInt(book.ID, 10))
+
+	mockSvc.On("UpdateBook", mock.Anything, int64(1), book).Return(domain.Book{}, fmt.Errorf("%w: %s", domain.ErrValidation, "Rating must be between 1 and 100"))
+
+	err := handler.UpdateBook(c)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusBadRequest, rec.Code)
+	assert.Contains(t, rec.Body.String(), "Rating")
+}
+
 func TestDeleteBook(t *testing.T) {
 	mockSvc := new(mocks.BookService)
 	handler := rest.NewBookHandler(mockSvc)
@@ -134,24 +176,4 @@ func TestDeleteBook(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusNoContent, rec.Code)
 	assert.Equal(t, "", rec.Body.String())
-}
-
-func TestCreateBook_InvalidInput(t *testing.T) {
-	mockSvc := new(mocks.BookService)
-	handler := rest.NewBookHandler(mockSvc)
-
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/books", bytes.NewReader([]byte(`{"title": ""}`))) // Invalid title
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	c.Set("user", &mockJWTToken)
-
-	mockSvc.On("CreateBook", mock.Anything, int64(1), mock.Anything).Return(domain.Book{}, domain.ErrInvalidBook)
-
-	err := handler.CreateBook(c)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusBadRequest, rec.Code)
-	assert.Contains(t, rec.Body.String(), "invalid request format")
 }

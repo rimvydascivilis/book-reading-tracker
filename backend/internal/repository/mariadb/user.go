@@ -28,7 +28,7 @@ func (m *UserRepository) getOne(ctx context.Context, query string, args ...inter
 	res = domain.User{}
 	err = row.Scan(&res.ID, &res.Email, &res.CreatedAt)
 	if err == sql.ErrNoRows {
-		return domain.User{}, domain.ErrUserNotFound
+		return domain.User{}, domain.ErrRecordNotFound
 	}
 	if err != nil {
 		return domain.User{}, err

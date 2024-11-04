@@ -11,15 +11,16 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func setupUserService() (*UserService, *mocks.UserRepository) {
+func setupUserService() (domain.UserService, *mocks.UserRepository, *mocks.ValidationService) {
 	userRepo := new(mocks.UserRepository)
-	userService := NewUserService(userRepo)
+	validationSvc := new(mocks.ValidationService)
+	userService := NewUserService(userRepo, validationSvc)
 
-	return userService, userRepo
+	return userService, userRepo, validationSvc
 }
 
 func TestUserService_GetOrCreateUser_Success(t *testing.T) {
-	userService, userRepo := setupUserService()
+	userService, userRepo, _ := setupUserService()
 
 	ctx := context.Background()
 	testEmail := "existinguser@example.com"
@@ -36,14 +37,14 @@ func TestUserService_GetOrCreateUser_Success(t *testing.T) {
 }
 
 func TestUserService_GetOrCreateUser_CreateUser(t *testing.T) {
-	userService, userRepo := setupUserService()
+	userService, userRepo, validationSvc := setupUserService()
 
 	ctx := context.Background()
 	testEmail := "newuser@example.com"
 	testUser := domain.User{ID: 2, Email: testEmail}
 
-	userRepo.On("GetByEmail", ctx, testEmail).Return(domain.User{}, domain.ErrUserNotFound)
-
+	userRepo.On("GetByEmail", ctx, testEmail).Return(domain.User{}, domain.ErrRecordNotFound)
+	validationSvc.On("ValidateStruct", mock.AnythingOfType("domain.User")).Return(nil)
 	userRepo.On("CreateUser", ctx, mock.AnythingOfType("domain.User")).Return(testUser, nil)
 
 	user, err := userService.GetOrCreateUser(ctx, testEmail)
@@ -55,7 +56,7 @@ func TestUserService_GetOrCreateUser_CreateUser(t *testing.T) {
 }
 
 func TestUserService_GetOrCreateUser_Error(t *testing.T) {
-	userService, userRepo := setupUserService()
+	userService, userRepo, _ := setupUserService()
 
 	ctx := context.Background()
 	testEmail := "erroruser@example.com"

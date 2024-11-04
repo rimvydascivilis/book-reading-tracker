@@ -2,10 +2,12 @@ package rest
 
 import (
 	"errors"
+	"net/http"
 	"strconv"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"github.com/rimvydascivilis/book-tracker/backend/domain"
 	"github.com/rimvydascivilis/book-tracker/backend/utils"
 )
 
@@ -38,9 +40,23 @@ func getUserIDFromToken(c echo.Context) (int64, error) {
 
 	userID, ok := claims["id"].(float64)
 	if !ok {
-		utils.Info("user ID not found in token", map[string]interface{}{"claims": userID})
 		return 0, errors.New("user ID not found in token")
 	}
 
 	return int64(userID), nil
+}
+
+func handleSeriviceError(c echo.Context, err error) error {
+	if errors.Is(err, domain.ErrValidation) {
+		return c.JSON(http.StatusBadRequest, ResponseError{Message: err.Error()})
+	}
+	if errors.Is(err, domain.ErrRecordNotFound) {
+		return c.JSON(http.StatusNotFound, ResponseError{Message: err.Error()})
+	}
+	if errors.Is(err, domain.ErrAuthentication) {
+		return c.JSON(http.StatusUnauthorized, ResponseError{Message: err.Error()})
+	}
+
+	utils.Error("failed to handle request", err)
+	return c.JSON(http.StatusInternalServerError, ResponseError{Message: "server error"})
 }

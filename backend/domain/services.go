@@ -2,6 +2,10 @@ package domain
 
 import "context"
 
+type ValidationService interface {
+	ValidateStruct(s interface{}) error
+}
+
 type AuthService interface {
 	Login(ctx context.Context, googleOauthToken string) (string, error)
 }

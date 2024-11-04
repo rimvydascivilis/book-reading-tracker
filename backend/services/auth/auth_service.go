@@ -20,8 +20,6 @@ func NewAuthService(userSvc domain.UserService, oauthSvc domain.OAuth2Service, t
 	}
 }
 
-// Login verifies a Google OAuth token and creates a user if not exists.
-// Returns JWT token or an error if the login fails.
 func (a *AuthService) Login(ctx context.Context, token string) (string, error) {
 	email, err := a.oauth2Svc.ValidateToken(token)
 	if err != nil {

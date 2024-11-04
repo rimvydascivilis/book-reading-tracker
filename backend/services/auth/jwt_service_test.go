@@ -60,11 +60,11 @@ func TestJWTService_GenerateToken_InvalidUserID(t *testing.T) {
 	ctx := context.Background()
 	invalidUserID := int64(999) // An ID that does not exist
 
-	userRepo.On("GetByID", ctx, invalidUserID).Return(domain.User{}, domain.ErrUserNotFound)
+	userRepo.On("GetByID", ctx, invalidUserID).Return(domain.User{}, domain.ErrRecordNotFound)
 
 	token, err := jwtService.GenerateToken(ctx, invalidUserID)
 
 	assert.Error(t, err)
 	assert.Empty(t, token)
-	assert.Equal(t, domain.ErrUserNotFound, err)
+	assert.Equal(t, domain.ErrRecordNotFound, err)
 }

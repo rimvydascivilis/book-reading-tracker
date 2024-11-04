@@ -18,6 +18,7 @@ import (
 	"github.com/rimvydascivilis/book-tracker/backend/services/auth"
 	"github.com/rimvydascivilis/book-tracker/backend/services/book"
 	"github.com/rimvydascivilis/book-tracker/backend/services/user"
+	"github.com/rimvydascivilis/book-tracker/backend/services/validation"
 	"github.com/rimvydascivilis/book-tracker/backend/utils"
 )
 
@@ -79,14 +80,15 @@ func main() {
 	bookRepo := mariadbRepo.NewBookRepository(dbConn)
 
 	// Services
+	validationSvc := validation.NewValidationService()
 	googleOauth2Svc, err := auth.NewGoogleOAuth2Service()
 	if err != nil {
 		utils.Fatal("failed to create Google OAuth2 service", err)
 	}
 	jwtSvc := auth.NewJWTService(cfg.JWTSecret, userRepo)
-	userSvc := user.NewUserService(userRepo)
+	userSvc := user.NewUserService(userRepo, validationSvc)
 	authSvc := auth.NewAuthService(userSvc, googleOauth2Svc, jwtSvc)
-	bookSvc := book.NewBookService(bookRepo)
+	bookSvc := book.NewBookService(bookRepo, validationSvc)
 
 	// Handlers
 	authH := rest.NewAuthHandler(authSvc)
