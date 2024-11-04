@@ -9,7 +9,7 @@ const {Sider} = Layout;
 
 const items = [
   {
-    key: "2",
+    key: "1",
     icon: <LibraryOutlined />,
     label: "Library",
     path: PathConstants.LIBRARY,

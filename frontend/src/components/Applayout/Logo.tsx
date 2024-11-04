@@ -1,10 +1,11 @@
 import React from "react";
 import logo from "../../assets/logo.png";
 import {Link} from "react-router-dom";
+import PathConstants from "../../routes/PathConstants";
 
 const Header: React.FC = () => {
   return (
-    <Link to="/">
+    <Link to={PathConstants.HOME}>
       <div
         style={{
           display: "flex",

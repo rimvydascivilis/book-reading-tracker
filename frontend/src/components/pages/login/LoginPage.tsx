@@ -8,28 +8,36 @@ import {
 import api from "../../../api/api";
 import PathConstants from "../../../routes/PathConstants";
 import config from "../../../config/config";
+import {message} from "antd";
 import {useAuth} from "../../../context/AuthContext";
+import {IAxiosError} from "../../../types/errorTypes";
 
 const LoginPage: React.FC = () => {
   const {login, isAuthenticated} = useAuth();
 
-  const handleLoginSuccess = (credentialResponse: CredentialResponse) => {
+  const handleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     if (!credentialResponse.credential) {
-      console.error("No credential response");
+      message.error("Failed to login: No credential received.");
       return;
     }
-    api
-      .post("/auth/login", {token: credentialResponse.credential})
-      .then(response => {
-        if (response.status === 200) {
-          login(response.data.token);
-          window.location.reload();
-        }
+
+    try {
+      const response = await api.post("/auth/login", {
+        token: credentialResponse.credential,
       });
+      login(response.data.token);
+      message.success("Login successful!");
+    } catch (error) {
+      const axiosError = error as IAxiosError;
+      message.error(
+        "Failed to login: " +
+          (axiosError.response?.data.message || "Network error"),
+      );
+    }
   };
 
   if (isAuthenticated) {
-    return <Navigate to={PathConstants.LIBRARY} />;
+    return <Navigate to={PathConstants.HOME} />;
   }
 
   return (
