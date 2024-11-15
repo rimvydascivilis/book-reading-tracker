@@ -1,13 +1,11 @@
-import React, {ReactNode, Suspense} from "react";
-import {Outlet} from "react-router-dom";
-import Sidebar from "./Sidebar";
-import Loading from "../common/Loading";
-import Logo from "./Logo";
-import {Layout, theme, Button} from "antd";
-import {LogoutOutlined} from "@ant-design/icons";
-import {useAuth} from "../../context/AuthContext";
+import React, {ReactNode, Suspense} from 'react';
+import {Outlet} from 'react-router-dom';
+import Sidebar from './Sidebar';
+import Loading from '../common/Loading';
+import {Layout, theme} from 'antd';
+import Header from './Header';
 
-const {Content, Footer, Header} = Layout;
+const {Content, Footer} = Layout;
 
 interface AppLayoutProps {
   children?: ReactNode;
@@ -18,39 +16,22 @@ const AppLayout: React.FC<AppLayoutProps> = ({children}) => {
     token: {colorBgContainer, borderRadiusLG},
   } = theme.useToken();
 
-  const {isAuthenticated, logout} = useAuth();
-
   return (
-    <Layout style={{minHeight: "100vh"}}>
-      <Header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: "white",
-          padding: "0 24px 0 0",
-        }}>
-        <Logo />
-        {isAuthenticated && (
-          <Button onClick={logout} type="primary" style={{marginLeft: "auto"}}>
-            <LogoutOutlined />
-            Logout
-          </Button>
-        )}
-      </Header>
+    <Layout style={{height: '100vh'}}>
+      <Header />
       <Layout>
         <Sidebar />
         <Layout>
           <Content
             style={{
-              margin: "24px",
-              textAlign: "center",
+              margin: '24px',
+              textAlign: 'center',
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}>
             <Suspense fallback={<Loading />}>{children ?? <Outlet />}</Suspense>
           </Content>
-          <Footer style={{textAlign: "center"}}>
+          <Footer style={{textAlign: 'center'}}>
             Book tracker ©{new Date().getFullYear()} Created by Rimvydas
           </Footer>
         </Layout>
