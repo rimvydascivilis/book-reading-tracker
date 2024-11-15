@@ -4,6 +4,7 @@ import { Layout, Dropdown, Avatar } from 'antd';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import PathConstants from '../../routes/PathConstants';
 
 const AntHeader = Layout.Header;
 
@@ -17,7 +18,7 @@ const Header: React.FC = () => {
       label: 'Set Goal',
       icon: <SettingOutlined />,
       onClick: () => {
-        navigate('/goal');
+        navigate(PathConstants.GOAL);
       },
     },
     {

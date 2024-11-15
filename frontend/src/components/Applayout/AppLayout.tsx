@@ -28,6 +28,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({children}) => {
               textAlign: 'center',
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
+              overflowY: 'auto',
             }}>
             <Suspense fallback={<Loading />}>{children ?? <Outlet />}</Suspense>
           </Content>
