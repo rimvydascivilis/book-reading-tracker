@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from "react";
-import {message} from "antd";
-import BookList from "./BookList";
-import BookCreationForm from "./BookCreationForm";
-import {IBook} from "../../../types/bookTypes";
-import api from "../../../api/api";
-import axios from "axios";
-import {IAxiosError} from "../../../types/errorTypes";
+import React, {useState, useEffect} from 'react';
+import {message} from 'antd';
+import BookList from './BookList';
+import BookCreationForm from './BookCreationForm';
+import {IBook} from '../../../types/bookTypes';
+import api from '../../../api/api';
+import axios from 'axios';
+import {IAxiosError} from '../../../types/errorTypes';
 
 const PAGE_SIZE = 10;
 
@@ -37,11 +37,11 @@ const LibraryPage: React.FC = () => {
       const axiosError = error as IAxiosError;
       if (axiosError.response) {
         message.error(
-          "Failed to load books: " +
-            (axiosError.response.data.message || "Network error"),
+          'Failed to load books: ' +
+            (axiosError.response.data.message || 'Network error'),
         );
       } else {
-        message.error("Failed to load books: Unknown error");
+        message.error('Failed to load books: Unknown error');
       }
     } finally {
       setLoading(false);
@@ -64,15 +64,15 @@ const LibraryPage: React.FC = () => {
       const response = await api.post(`/books`, {title});
       const newBook: IBook = response.data;
       setBooks(prevBooks => [...prevBooks, newBook]);
-      message.success("New book added!");
+      message.success('New book added!');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         message.error(
-          "Failed to add book: " + error.response.data.message ||
-            "Network error",
+          'Failed to add book: ' + error.response.data.message ||
+            'Network error',
         );
       } else {
-        message.error("Failed to add book: Unknown error");
+        message.error('Failed to add book: Unknown error');
       }
     }
   };
@@ -85,12 +85,12 @@ const LibraryPage: React.FC = () => {
           book.id === id ? {...book, title: newTitle} : book,
         );
       });
-      message.success("Book title updated successfully.");
+      message.success('Book title updated successfully.');
     } catch (error) {
       const axiosError = error as IAxiosError;
       message.error(
-        "Failed to update book title: " +
-          (axiosError.response?.data.message || "Network error"),
+        'Failed to update book title: ' +
+          (axiosError.response?.data.message || 'Network error'),
       );
     }
   };
@@ -103,12 +103,12 @@ const LibraryPage: React.FC = () => {
           book.id === id ? {...book, rating} : book,
         );
       });
-      message.success("Book rating updated successfully.");
+      message.success('Book rating updated successfully.');
     } catch (error) {
       const axiosError = error as IAxiosError;
       message.error(
-        "Failed to update book rating: " +
-          (axiosError.response?.data.message || "Network error"),
+        'Failed to update book rating: ' +
+          (axiosError.response?.data.message || 'Network error'),
       );
     }
   };
@@ -117,28 +117,28 @@ const LibraryPage: React.FC = () => {
     try {
       await api.delete(`/books/${id}`);
       setBooks(prevBooks => prevBooks.filter(book => book.id !== id));
-      message.success("Book deleted!");
+      message.success('Book deleted!');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         message.error(
-          "Failed to delete book: " + error.response.data.message ||
-            "Network error",
+          'Failed to delete book: ' + error.response.data.message ||
+            'Network error',
         );
       } else {
-        message.error("Failed to delete book: Unknown error");
+        message.error('Failed to delete book: Unknown error');
       }
     }
   };
 
   return (
-    <div style={{padding: "20px", fontSize: "18px"}}>
+    <div style={{padding: '20px', fontSize: '18px'}}>
       <BookCreationForm onCreate={handleCreateBook} />
       <div
         style={{
-          height: "500px",
-          overflowY: "auto",
-          border: "1px solid #eaeaea",
-          padding: "10px",
+          height: '500px',
+          overflowY: 'auto',
+          border: '1px solid #eaeaea',
+          padding: '10px',
         }}
         onScroll={handleScroll}>
         <BookList

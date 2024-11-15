@@ -1,7 +1,7 @@
-import React from "react";
-import {List, Spin} from "antd";
-import BookItem from "./BookItem";
-import {IBook} from "../../../types/bookTypes";
+import React from 'react';
+import {List, Spin} from 'antd';
+import BookItem from './BookItem';
+import {IBook} from '../../../types/bookTypes';
 
 interface BookListProps {
   books: IBook[];
@@ -32,7 +32,7 @@ const BookList: React.FC<BookListProps> = ({
           />
         )}
       />
-      {loading && <Spin style={{display: "block", margin: "20px auto"}} />}
+      {loading && <Spin style={{display: 'block', margin: '20px auto'}} />}
     </>
   );
 };

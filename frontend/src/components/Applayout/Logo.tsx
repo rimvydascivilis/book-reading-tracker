@@ -1,24 +1,24 @@
-import React from "react";
-import logo from "../../assets/logo.png";
-import {Link} from "react-router-dom";
-import PathConstants from "../../routes/PathConstants";
+import React from 'react';
+import logo from '../../assets/logo.png';
+import {Link} from 'react-router-dom';
+import PathConstants from '../../routes/PathConstants';
 
 const Header: React.FC = () => {
   return (
     <Link to={PathConstants.HOME}>
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          background: "white",
-          padding: "0",
+          display: 'flex',
+          alignItems: 'center',
+          background: 'white',
+          padding: '0',
         }}>
         <img
           src={logo}
           alt="logo"
-          style={{width: "50px", height: "50px", margin: "0 15px"}}
+          style={{width: '50px', height: '50px', margin: '0 15px'}}
         />
-        <span style={{fontSize: "24px", fontWeight: "bold"}}>Book tracker</span>
+        <span style={{fontSize: '24px', fontWeight: 'bold'}}>Book tracker</span>
       </div>
     </Link>
   );
