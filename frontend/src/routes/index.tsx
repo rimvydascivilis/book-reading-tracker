@@ -7,11 +7,16 @@ const Login = React.lazy(() => import('../components/pages/login/LoginPage'));
 const Library = React.lazy(
   () => import('../components/pages/library/LibraryPage'),
 );
+const Goal = React.lazy(() => import('../components/pages/goal/GoalPage'));
 
 const protectedRoutes = [
   {
     path: PathConstants.LIBRARY,
     component: Library,
+  },
+  {
+    path: PathConstants.GOAL,
+    component: Goal,
   },
 ];
 

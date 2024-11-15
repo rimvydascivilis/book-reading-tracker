@@ -28,10 +28,19 @@ const AppLayout: React.FC<AppLayoutProps> = ({children}) => {
               textAlign: 'center',
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
+              overflowY: 'auto',
             }}>
             <Suspense fallback={<Loading />}>{children ?? <Outlet />}</Suspense>
           </Content>
-          <Footer style={{textAlign: 'center'}}>
+          <Footer
+            style={{
+              background: colorBgContainer,
+              maxHeight: '50px',
+              height: '4vh',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             Book tracker ©{new Date().getFullYear()} Created by Rimvydas
           </Footer>
         </Layout>

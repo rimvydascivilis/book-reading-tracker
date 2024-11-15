@@ -46,7 +46,7 @@ func getUserIDFromToken(c echo.Context) (int64, error) {
 	return int64(userID), nil
 }
 
-func handleSeriviceError(c echo.Context, err error) error {
+func handleServiceError(c echo.Context, err error) error {
 	if errors.Is(err, domain.ErrValidation) {
 		return c.JSON(http.StatusBadRequest, ResponseError{Message: err.Error()})
 	}

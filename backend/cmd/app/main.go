@@ -17,6 +17,7 @@ import (
 	"github.com/rimvydascivilis/book-tracker/backend/internal/rest"
 	"github.com/rimvydascivilis/book-tracker/backend/services/auth"
 	"github.com/rimvydascivilis/book-tracker/backend/services/book"
+	"github.com/rimvydascivilis/book-tracker/backend/services/goal"
 	"github.com/rimvydascivilis/book-tracker/backend/services/user"
 	"github.com/rimvydascivilis/book-tracker/backend/services/validation"
 	"github.com/rimvydascivilis/book-tracker/backend/utils"
@@ -78,6 +79,7 @@ func main() {
 	// Repositories
 	userRepo := mariadbRepo.NewUserRepository(dbConn)
 	bookRepo := mariadbRepo.NewBookRepository(dbConn)
+	goalRepo := mariadbRepo.NewGoalRepository(dbConn)
 
 	// Services
 	validationSvc := validation.NewValidationService()
@@ -89,10 +91,12 @@ func main() {
 	userSvc := user.NewUserService(userRepo, validationSvc)
 	authSvc := auth.NewAuthService(userSvc, googleOauth2Svc, jwtSvc)
 	bookSvc := book.NewBookService(bookRepo, validationSvc)
+	goalSvc := goal.NewGoalService(goalRepo, validationSvc)
 
 	// Handlers
 	authH := rest.NewAuthHandler(authSvc)
 	bookH := rest.NewBookHandler(bookSvc)
+	goalH := rest.NewGoalHandler(goalSvc)
 
 	// Route groups
 	api := e.Group("/api")
@@ -109,6 +113,9 @@ func main() {
 	authenticatedApi.POST("/books", bookH.CreateBook)
 	authenticatedApi.PUT("/books/:id", bookH.UpdateBook)
 	authenticatedApi.DELETE("/books/:id", bookH.DeleteBook)
+
+	authenticatedApi.GET("/goal", goalH.GetGoal)
+	authenticatedApi.PUT("/goal", goalH.SetGoal)
 
 	log.Fatal(e.Start(cfg.ServerAddr))
 }

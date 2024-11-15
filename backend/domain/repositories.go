@@ -16,3 +16,9 @@ type BookRepository interface {
 	CreateBook(ctx context.Context, userID int64, book Book) (Book, error)
 	DeleteBook(ctx context.Context, userID, bookID int64) error
 }
+
+type GoalRepository interface {
+	GetGoalByUserID(ctx context.Context, userID int64) (Goal, error)
+	CreateGoal(ctx context.Context, userID int64, goal Goal) (Goal, error)
+	UpdateGoal(ctx context.Context, userID int64, goal Goal) (Goal, error)
+}

@@ -39,7 +39,7 @@ func (a *BookHandler) GetBooks(c echo.Context) error {
 
 	books, hasMore, err := a.BookSvc.GetBooks(ctx, userID, page, limit)
 	if err != nil {
-		return handleSeriviceError(c, err)
+		return handleServiceError(c, err)
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
@@ -68,7 +68,7 @@ func (a *BookHandler) CreateBook(c echo.Context) error {
 
 	book, err := a.BookSvc.CreateBook(ctx, userID, req)
 	if err != nil {
-		return handleSeriviceError(c, err)
+		return handleServiceError(c, err)
 	}
 
 	return c.JSON(http.StatusCreated, book)
@@ -102,7 +102,7 @@ func (a *BookHandler) UpdateBook(c echo.Context) error {
 
 	book, err := a.BookSvc.UpdateBook(ctx, userID, req)
 	if err != nil {
-		return handleSeriviceError(c, err)
+		return handleServiceError(c, err)
 	}
 
 	return c.JSON(http.StatusOK, book)
@@ -128,7 +128,7 @@ func (a *BookHandler) DeleteBook(c echo.Context) error {
 
 	err = a.BookSvc.DeleteBook(ctx, userID, bookID)
 	if err != nil {
-		return handleSeriviceError(c, err)
+		return handleServiceError(c, err)
 	}
 
 	return c.NoContent(http.StatusNoContent)
