@@ -3,5 +3,6 @@ export interface IAxiosError {
     data: {
       message: string;
     };
+    status: number;
   };
 }

@@ -1,4 +1,5 @@
--- Drop tables
+-- Drop tables if they already exist
+DROP TABLE IF EXISTS goal;
 DROP TABLE IF EXISTS book;
 DROP TABLE IF EXISTS user;
 
@@ -8,6 +9,16 @@ CREATE TABLE user (
     email VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
+);
+
+-- goal table
+CREATE TABLE goal (
+    user_id INT NOT NULL,
+    type ENUM('books', 'pages') NOT NULL,
+    frequency ENUM('daily', 'monthly') NOT NULL,
+    value INT NOT NULL CHECK (value >= 1),
+    PRIMARY KEY (user_id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 -- book table

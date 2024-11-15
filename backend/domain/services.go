@@ -28,3 +28,8 @@ type BookService interface {
 type UserService interface {
 	GetOrCreateUser(ctx context.Context, email string) (User, error)
 }
+
+type GoalService interface {
+	GetGoal(ctx context.Context, userID int64) (Goal, error)
+	SetGoal(ctx context.Context, userID int64, goal Goal) (Goal, error)
+}

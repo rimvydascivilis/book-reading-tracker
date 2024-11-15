@@ -43,7 +43,7 @@ func (s *bookService) GetBooks(ctx context.Context, userID, page, limit int64) (
 	}
 
 	hasMore := totalCount > page*limit
-	if !hasMore {
+	if totalCount == 0 {
 		return []domain.Book{}, false, nil
 	}
 

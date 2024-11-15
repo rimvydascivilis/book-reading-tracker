@@ -16,3 +16,10 @@ type Book struct {
 	Rating    float64   `json:"rating,omitempty" validate:"gte=0,lte=5"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type Goal struct {
+	UserID    int64  `json:"user_id" validate:"required"`
+	Type      string `json:"type" validate:"required,oneof=books pages"`
+	Frequency string `json:"frequency" validate:"required,oneof=daily monthly"`
+	Value     int64  `json:"value" validate:"required,min=1"`
+}
