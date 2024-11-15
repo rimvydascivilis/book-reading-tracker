@@ -131,7 +131,15 @@ const LibraryPage: React.FC = () => {
   };
 
   return (
-    <div style={{padding: '20px', fontSize: '18px'}}>
+    <div
+      style={{
+        height: '100%',
+        padding: '20px',
+        fontSize: '18px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}>
       <BookCreationForm onCreate={handleCreateBook} />
       <div
         style={{
