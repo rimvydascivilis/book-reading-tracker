@@ -14,7 +14,7 @@ The Book Tracking System is a web application where users can log their reading 
 #### Sprint 2:
 - [ ] Tracking reading progress in terms of pages read.
 - [x] Book rating feature.
-- [ ] Setting daily or monthly reading goals.
+- [x] Setting daily or monthly reading goals.
 
 #### Sprint 3:
 - [ ] Adding notes to book pages (e.g., favorite quotes or reflections).
