@@ -37,6 +37,7 @@ const Header: React.FC = () => {
         background: 'white',
         padding: '0 3vw 0 0',
         height: '8vh',
+        minHeight: '30px',
       }}
     >
       <Logo />
