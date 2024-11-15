@@ -32,14 +32,15 @@ const AppLayout: React.FC<AppLayoutProps> = ({children}) => {
             }}>
             <Suspense fallback={<Loading />}>{children ?? <Outlet />}</Suspense>
           </Content>
-          <Footer style={{
-            background: colorBgContainer,
-            maxHeight: '50px',
-            height: '4vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+          <Footer
+            style={{
+              background: colorBgContainer,
+              maxHeight: '50px',
+              height: '4vh',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             Book tracker ©{new Date().getFullYear()} Created by Rimvydas
           </Footer>
         </Layout>

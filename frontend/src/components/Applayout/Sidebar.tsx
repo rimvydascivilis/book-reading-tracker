@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useLocation} from 'react-router-dom';
 import PathConstants from '../../routes/PathConstants';
-import { Layout, Menu } from 'antd';
-import { BankOutlined as LibraryOutlined } from '@ant-design/icons';
+import {Layout, Menu} from 'antd';
+import {BankOutlined as LibraryOutlined} from '@ant-design/icons';
 
-const { Sider } = Layout;
+const {Sider} = Layout;
 
 const items = [
   {
@@ -25,7 +25,7 @@ const Sidebar: React.FC = () => {
     setSelectedKey(currentItem ? currentItem.key : null);
   }, [location.pathname]);
 
-  const handleClick = (e: { key: string }) => {
+  const handleClick = (e: {key: string}) => {
     const clickedItem = items.find(item => item.key === e.key);
     if (clickedItem) {
       navigate(clickedItem.path);

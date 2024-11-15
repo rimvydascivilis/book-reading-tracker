@@ -17,7 +17,7 @@ const protectedRoutes = [
   {
     path: PathConstants.GOAL,
     component: Goal,
-  }
+  },
 ];
 
 const routes = [

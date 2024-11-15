@@ -1,15 +1,15 @@
 import React from 'react';
 import Logo from './Logo';
-import { Layout, Dropdown, Avatar } from 'antd';
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import {Layout, Dropdown, Avatar} from 'antd';
+import {LogoutOutlined, SettingOutlined, UserOutlined} from '@ant-design/icons';
+import {useAuth} from '../../context/AuthContext';
+import {useNavigate} from 'react-router-dom';
 import PathConstants from '../../routes/PathConstants';
 
 const AntHeader = Layout.Header;
 
 const Header: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const {isAuthenticated, logout} = useAuth();
   const navigate = useNavigate();
 
   const menuItems = [
@@ -39,15 +39,13 @@ const Header: React.FC = () => {
         padding: '0 3vw 0 0',
         height: '8vh',
         minHeight: '30px',
-      }}
-    >
+      }}>
       <Logo />
       {isAuthenticated && (
         <Dropdown
-          menu={{ items: menuItems }}
+          menu={{items: menuItems}}
           trigger={['hover']}
-          overlayStyle={{ minWidth: '10vw' }}
-        >
+          overlayStyle={{minWidth: '10vw'}}>
           <div
             style={{
               cursor: 'pointer',
@@ -55,8 +53,7 @@ const Header: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               height: '100%',
-            }}
-          >
+            }}>
             <Avatar
               style={{
                 backgroundColor: '#1677ff',
@@ -65,7 +62,6 @@ const Header: React.FC = () => {
               size="large"
             />
           </div>
-
         </Dropdown>
       )}
     </AntHeader>
