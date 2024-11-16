@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/rimvydascivilis/book-tracker/backend/domain"
 	"github.com/rimvydascivilis/book-tracker/backend/internal/rest"
@@ -17,12 +16,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
-
-var mockJWTToken = jwt.Token{
-	Claims: jwt.MapClaims{
-		"id": float64(1),
-	},
-}
 
 func TestGetBooks(t *testing.T) {
 	mockSvc := new(mocks.BookService)

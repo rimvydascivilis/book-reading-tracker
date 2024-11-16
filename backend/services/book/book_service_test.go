@@ -22,20 +22,30 @@ func setupBookService() (domain.BookService, *mocks.BookRepository, *mocks.Valid
 func TestCreateBook(t *testing.T) {
 	service, mockRepo, validationSvc := setupBookService()
 
-	userID := int64(1)
-	book := domain.Book{
+	reqBook := domain.Book{
 		Title:  "New Book",
 		Rating: 4,
 	}
 
-	mockRepo.On("CreateBook", mock.Anything, userID, book).Return(book, nil)
+	userID := int64(1)
+	book := domain.Book{
+		ID:     0,
+		UserID: userID,
+		Title:  "New Book",
+		Rating: 4,
+	}
+
+	mockRepo.On("CreateBook", mock.Anything, book).Return(book, nil)
 	validationSvc.On("ValidateStruct", book).Return(nil)
 
-	createdBook, err := service.CreateBook(context.Background(), userID, book)
+	createdBook, err := service.CreateBook(context.Background(), userID, reqBook)
 
 	assert.NoError(t, err)
+
 	assert.Equal(t, book.Title, createdBook.Title)
+
 	mockRepo.AssertExpectations(t)
+	validationSvc.AssertExpectations(t)
 }
 
 func TestCreateBook_EmptyTitle(t *testing.T) {
@@ -45,7 +55,12 @@ func TestCreateBook_EmptyTitle(t *testing.T) {
 	book := domain.Book{
 		Rating: 4,
 	}
-	validationSvc.On("ValidateStruct", book).Return(fmt.Errorf("Title is required"))
+	validationBook := domain.Book{
+		UserID: userID,
+		Rating: 4,
+	}
+
+	validationSvc.On("ValidateStruct", validationBook).Return(fmt.Errorf("Title is required"))
 
 	createdBook, err := service.CreateBook(context.Background(), userID, book)
 
@@ -63,7 +78,13 @@ func TestCreateBook_InvalidRating(t *testing.T) {
 		Rating: 100, // Invalid rating
 	}
 
-	validationSvc.On("ValidateStruct", book).Return(fmt.Errorf("Rating must be between 1 and 5"))
+	validationBook := domain.Book{
+		Title:  "New Book",
+		UserID: userID,
+		Rating: 100,
+	}
+
+	validationSvc.On("ValidateStruct", validationBook).Return(fmt.Errorf("Rating must be between 1 and 5"))
 
 	createdBook, err := service.CreateBook(context.Background(), userID, book)
 
@@ -77,14 +98,36 @@ func TestGetBooks(t *testing.T) {
 
 	userID := int64(1)
 	page := int64(1)
-	limit := int64(10)
+	limit := int64(2)
 	books := []domain.Book{
 		{ID: 1, Title: "Book 1", Rating: 5},
 		{ID: 2, Title: "Book 2", Rating: 4},
 	}
 
 	mockRepo.On("GetBooksByUser", mock.Anything, userID, int64(0), limit).Return(books, nil)
-	mockRepo.On("CountBooksByUser", mock.Anything, userID).Return(int64(15), nil)
+	mockRepo.On("CountBooksByUser", mock.Anything, userID).Return(int64(2), nil)
+
+	resultBooks, hasMore, err := service.GetBooks(context.Background(), userID, page, limit)
+
+	assert.NoError(t, err)
+	assert.Equal(t, books, resultBooks)
+	assert.False(t, hasMore)
+	mockRepo.AssertExpectations(t)
+}
+
+func TestGetBooks_hasMore(t *testing.T) {
+	service, mockRepo, _ := setupBookService()
+
+	userID := int64(1)
+	page := int64(1)
+	limit := int64(2)
+	books := []domain.Book{
+		{ID: 1, Title: "Book 1", Rating: 5},
+		{ID: 2, Title: "Book 2", Rating: 4},
+	}
+
+	mockRepo.On("GetBooksByUser", mock.Anything, userID, int64(0), limit).Return(books, nil)
+	mockRepo.On("CountBooksByUser", mock.Anything, userID).Return(int64(3), nil)
 
 	resultBooks, hasMore, err := service.GetBooks(context.Background(), userID, page, limit)
 
@@ -109,9 +152,16 @@ func TestUpdateBook(t *testing.T) {
 		Rating: 4,
 	}
 
+	updatedBook := domain.Book{
+		ID:     1,
+		UserID: userID,
+		Title:  "Updated Book",
+		Rating: 5,
+	}
+
 	mockRepo.On("GetBookByUserID", mock.Anything, userID, book.ID).Return(existingBook, nil)
-	validationSvc.On("ValidateStruct", book).Return(nil)
-	mockRepo.On("UpdateBook", mock.Anything, userID, book).Return(book, nil)
+	validationSvc.On("ValidateStruct", updatedBook).Return(nil)
+	mockRepo.On("UpdateBook", mock.Anything, updatedBook).Return(book, nil)
 
 	updatedBook, err := service.UpdateBook(context.Background(), userID, book)
 
@@ -134,9 +184,15 @@ func TestUpdateBook_InvalidRating(t *testing.T) {
 		Title:  "Old Title",
 		Rating: 4,
 	}
+	updatedBook := domain.Book{
+		ID:     1,
+		UserID: userID,
+		Title:  "Updated Book",
+		Rating: 100,
+	}
 
 	mockRepo.On("GetBookByUserID", mock.Anything, userID, book.ID).Return(existingBook, nil)
-	validationSvc.On("ValidateStruct", book).Return(fmt.Errorf("Rating must be between 1 and 5"))
+	validationSvc.On("ValidateStruct", updatedBook).Return(fmt.Errorf("Rating must be between 1 and 5"))
 
 	updatedBook, err := service.UpdateBook(context.Background(), userID, book)
 
