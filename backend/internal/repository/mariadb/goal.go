@@ -34,24 +34,22 @@ func (r *GoalRepository) GetGoalByUserID(ctx context.Context, userID int64) (dom
 	return goal, nil
 }
 
-func (r *GoalRepository) CreateGoal(ctx context.Context, userID int64, goal domain.Goal) (domain.Goal, error) {
+func (r *GoalRepository) CreateGoal(ctx context.Context, goal domain.Goal) (domain.Goal, error) {
 	query := `INSERT INTO goal (user_id, type, frequency, value) VALUES (?, ?, ?, ?)`
-	_, err := r.DB.ExecContext(ctx, query, userID, goal.Type, goal.Frequency, goal.Value)
+	_, err := r.DB.ExecContext(ctx, query, goal.UserID, goal.Type, goal.Frequency, goal.Value)
 	if err != nil {
 		return domain.Goal{}, err
 	}
 
-	goal.UserID = userID
 	return goal, nil
 }
 
-func (r *GoalRepository) UpdateGoal(ctx context.Context, userID int64, goal domain.Goal) (domain.Goal, error) {
+func (r *GoalRepository) UpdateGoal(ctx context.Context, goal domain.Goal) (domain.Goal, error) {
 	query := `UPDATE goal SET type = ?, frequency = ?, value = ? WHERE user_id = ?`
-	_, err := r.DB.ExecContext(ctx, query, goal.Type, goal.Frequency, goal.Value, userID)
+	_, err := r.DB.ExecContext(ctx, query, goal.Type, goal.Frequency, goal.Value, goal.UserID)
 	if err != nil {
 		return domain.Goal{}, err
 	}
 
-	goal.UserID = userID
 	return goal, nil
 }

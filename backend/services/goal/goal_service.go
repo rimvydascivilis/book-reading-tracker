@@ -40,12 +40,13 @@ func (s *goalService) SetGoal(ctx context.Context, userID int64, goal domain.Goa
 		if goal.Value > 0 {
 			currentGoal.Value = goal.Value
 		}
+		currentGoal.UserID = userID
 
 		if err := s.validationSvc.ValidateStruct(currentGoal); err != nil {
 			return domain.Goal{}, err
 		}
 
-		return s.goalRepo.UpdateGoal(ctx, userID, currentGoal)
+		return s.goalRepo.UpdateGoal(ctx, currentGoal)
 	} else if errors.Is(err, domain.ErrRecordNotFound) {
 		goal.UserID = userID
 
@@ -53,7 +54,7 @@ func (s *goalService) SetGoal(ctx context.Context, userID int64, goal domain.Goa
 			return domain.Goal{}, err
 		}
 
-		return s.goalRepo.CreateGoal(ctx, userID, goal)
+		return s.goalRepo.CreateGoal(ctx, goal)
 	}
 
 	return domain.Goal{}, err

@@ -19,11 +19,12 @@ func NewBookService(repo domain.BookRepository, validator domain.ValidationServi
 }
 
 func (s *bookService) CreateBook(ctx context.Context, userID int64, book domain.Book) (domain.Book, error) {
+	book.UserID = userID
 	if err := s.validationSvc.ValidateStruct(book); err != nil {
 		return domain.Book{}, err
 	}
 
-	return s.bookRepo.CreateBook(ctx, userID, book)
+	return s.bookRepo.CreateBook(ctx, book)
 }
 
 func (s *bookService) GetBooks(ctx context.Context, userID, page, limit int64) ([]domain.Book, bool, error) {
@@ -68,12 +69,13 @@ func (s *bookService) UpdateBook(ctx context.Context, userID int64, book domain.
 	if book.Rating != 0 {
 		currBook.Rating = book.Rating
 	}
+	currBook.UserID = userID
 
 	if err := s.validationSvc.ValidateStruct(currBook); err != nil {
 		return domain.Book{}, err
 	}
 
-	return s.bookRepo.UpdateBook(ctx, userID, currBook)
+	return s.bookRepo.UpdateBook(ctx, currBook)
 }
 
 func (s *bookService) DeleteBook(ctx context.Context, userID, bookID int64) error {

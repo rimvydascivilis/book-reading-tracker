@@ -60,7 +60,7 @@ func (m *BookRepository) CountBooksByUser(ctx context.Context, userID int64) (in
 	return count, nil
 }
 
-func (m *BookRepository) CreateBook(ctx context.Context, userID int64, b domain.Book) (domain.Book, error) {
+func (m *BookRepository) CreateBook(ctx context.Context, b domain.Book) (domain.Book, error) {
 	query := `INSERT INTO book (user_id, title, rating, created_at) VALUES (?, ?, ?, ?)`
 	stmt, err := m.DB.PrepareContext(ctx, query)
 	if err != nil {
@@ -69,7 +69,7 @@ func (m *BookRepository) CreateBook(ctx context.Context, userID int64, b domain.
 	defer stmt.Close()
 
 	b.CreatedAt = time.Now()
-	res, err := stmt.ExecContext(ctx, userID, b.Title, b.Rating, b.CreatedAt)
+	res, err := stmt.ExecContext(ctx, b.UserID, b.Title, b.Rating, b.CreatedAt)
 	if err != nil {
 		return domain.Book{}, err
 	}
@@ -103,7 +103,7 @@ func (m *BookRepository) GetBookByUserID(ctx context.Context, userID, bookID int
 	return b, nil
 }
 
-func (m *BookRepository) UpdateBook(ctx context.Context, userID int64, b domain.Book) (domain.Book, error) {
+func (m *BookRepository) UpdateBook(ctx context.Context, b domain.Book) (domain.Book, error) {
 	query := `UPDATE book SET title = ?, rating = ? WHERE user_id = ? AND id = ?`
 	stmt, err := m.DB.PrepareContext(ctx, query)
 	if err != nil {
@@ -111,7 +111,7 @@ func (m *BookRepository) UpdateBook(ctx context.Context, userID int64, b domain.
 	}
 	defer stmt.Close()
 
-	_, err = stmt.ExecContext(ctx, b.Title, b.Rating, userID, b.ID)
+	_, err = stmt.ExecContext(ctx, b.Title, b.Rating, b.UserID, b.ID)
 	if err != nil {
 		return domain.Book{}, err
 	}

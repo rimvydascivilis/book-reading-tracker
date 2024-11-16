@@ -12,6 +12,7 @@ type User struct {
 
 type Book struct {
 	ID        int64     `json:"id"`
+	UserID    int64     `json:"user_id" validate:"required"`
 	Title     string    `json:"title" validate:"required,min=1,max=50"`
 	Rating    float64   `json:"rating,omitempty" validate:"gte=0,lte=5"`
 	CreatedAt time.Time `json:"created_at"`

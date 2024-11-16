@@ -79,9 +79,9 @@ func (_c *BookRepository_CountBooksByUser_Call) RunAndReturn(run func(context.Co
 	return _c
 }
 
-// CreateBook provides a mock function with given fields: ctx, userID, book
-func (_m *BookRepository) CreateBook(ctx context.Context, userID int64, book domain.Book) (domain.Book, error) {
-	ret := _m.Called(ctx, userID, book)
+// CreateBook provides a mock function with given fields: ctx, book
+func (_m *BookRepository) CreateBook(ctx context.Context, book domain.Book) (domain.Book, error) {
+	ret := _m.Called(ctx, book)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateBook")
@@ -89,17 +89,17 @@ func (_m *BookRepository) CreateBook(ctx context.Context, userID int64, book dom
 
 	var r0 domain.Book
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, domain.Book) (domain.Book, error)); ok {
-		return rf(ctx, userID, book)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.Book) (domain.Book, error)); ok {
+		return rf(ctx, book)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, domain.Book) domain.Book); ok {
-		r0 = rf(ctx, userID, book)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.Book) domain.Book); ok {
+		r0 = rf(ctx, book)
 	} else {
 		r0 = ret.Get(0).(domain.Book)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, domain.Book) error); ok {
-		r1 = rf(ctx, userID, book)
+	if rf, ok := ret.Get(1).(func(context.Context, domain.Book) error); ok {
+		r1 = rf(ctx, book)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -114,15 +114,14 @@ type BookRepository_CreateBook_Call struct {
 
 // CreateBook is a helper method to define mock.On call
 //   - ctx context.Context
-//   - userID int64
 //   - book domain.Book
-func (_e *BookRepository_Expecter) CreateBook(ctx interface{}, userID interface{}, book interface{}) *BookRepository_CreateBook_Call {
-	return &BookRepository_CreateBook_Call{Call: _e.mock.On("CreateBook", ctx, userID, book)}
+func (_e *BookRepository_Expecter) CreateBook(ctx interface{}, book interface{}) *BookRepository_CreateBook_Call {
+	return &BookRepository_CreateBook_Call{Call: _e.mock.On("CreateBook", ctx, book)}
 }
 
-func (_c *BookRepository_CreateBook_Call) Run(run func(ctx context.Context, userID int64, book domain.Book)) *BookRepository_CreateBook_Call {
+func (_c *BookRepository_CreateBook_Call) Run(run func(ctx context.Context, book domain.Book)) *BookRepository_CreateBook_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(int64), args[2].(domain.Book))
+		run(args[0].(context.Context), args[1].(domain.Book))
 	})
 	return _c
 }
@@ -132,7 +131,7 @@ func (_c *BookRepository_CreateBook_Call) Return(_a0 domain.Book, _a1 error) *Bo
 	return _c
 }
 
-func (_c *BookRepository_CreateBook_Call) RunAndReturn(run func(context.Context, int64, domain.Book) (domain.Book, error)) *BookRepository_CreateBook_Call {
+func (_c *BookRepository_CreateBook_Call) RunAndReturn(run func(context.Context, domain.Book) (domain.Book, error)) *BookRepository_CreateBook_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -304,9 +303,9 @@ func (_c *BookRepository_GetBooksByUser_Call) RunAndReturn(run func(context.Cont
 	return _c
 }
 
-// UpdateBook provides a mock function with given fields: ctx, userID, book
-func (_m *BookRepository) UpdateBook(ctx context.Context, userID int64, book domain.Book) (domain.Book, error) {
-	ret := _m.Called(ctx, userID, book)
+// UpdateBook provides a mock function with given fields: ctx, book
+func (_m *BookRepository) UpdateBook(ctx context.Context, book domain.Book) (domain.Book, error) {
+	ret := _m.Called(ctx, book)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateBook")
@@ -314,17 +313,17 @@ func (_m *BookRepository) UpdateBook(ctx context.Context, userID int64, book dom
 
 	var r0 domain.Book
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, domain.Book) (domain.Book, error)); ok {
-		return rf(ctx, userID, book)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.Book) (domain.Book, error)); ok {
+		return rf(ctx, book)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64, domain.Book) domain.Book); ok {
-		r0 = rf(ctx, userID, book)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.Book) domain.Book); ok {
+		r0 = rf(ctx, book)
 	} else {
 		r0 = ret.Get(0).(domain.Book)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int64, domain.Book) error); ok {
-		r1 = rf(ctx, userID, book)
+	if rf, ok := ret.Get(1).(func(context.Context, domain.Book) error); ok {
+		r1 = rf(ctx, book)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -339,15 +338,14 @@ type BookRepository_UpdateBook_Call struct {
 
 // UpdateBook is a helper method to define mock.On call
 //   - ctx context.Context
-//   - userID int64
 //   - book domain.Book
-func (_e *BookRepository_Expecter) UpdateBook(ctx interface{}, userID interface{}, book interface{}) *BookRepository_UpdateBook_Call {
-	return &BookRepository_UpdateBook_Call{Call: _e.mock.On("UpdateBook", ctx, userID, book)}
+func (_e *BookRepository_Expecter) UpdateBook(ctx interface{}, book interface{}) *BookRepository_UpdateBook_Call {
+	return &BookRepository_UpdateBook_Call{Call: _e.mock.On("UpdateBook", ctx, book)}
 }
 
-func (_c *BookRepository_UpdateBook_Call) Run(run func(ctx context.Context, userID int64, book domain.Book)) *BookRepository_UpdateBook_Call {
+func (_c *BookRepository_UpdateBook_Call) Run(run func(ctx context.Context, book domain.Book)) *BookRepository_UpdateBook_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(int64), args[2].(domain.Book))
+		run(args[0].(context.Context), args[1].(domain.Book))
 	})
 	return _c
 }
@@ -357,7 +355,7 @@ func (_c *BookRepository_UpdateBook_Call) Return(_a0 domain.Book, _a1 error) *Bo
 	return _c
 }
 
-func (_c *BookRepository_UpdateBook_Call) RunAndReturn(run func(context.Context, int64, domain.Book) (domain.Book, error)) *BookRepository_UpdateBook_Call {
+func (_c *BookRepository_UpdateBook_Call) RunAndReturn(run func(context.Context, domain.Book) (domain.Book, error)) *BookRepository_UpdateBook_Call {
 	_c.Call.Return(run)
 	return _c
 }

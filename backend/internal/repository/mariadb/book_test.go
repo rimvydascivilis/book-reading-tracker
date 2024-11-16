@@ -69,6 +69,7 @@ func TestBookRepository_CreateBook_Success(t *testing.T) {
 
 	ctx := context.Background()
 	newBook := domain.Book{
+		UserID:    1,
 		Title:     "New Book",
 		Rating:    5,
 		CreatedAt: time.Now(),
@@ -76,10 +77,10 @@ func TestBookRepository_CreateBook_Success(t *testing.T) {
 
 	mock.ExpectPrepare(`INSERT INTO book \(user_id, title, rating, created_at\) VALUES \(\?, \?, \?, \?\)`).
 		ExpectExec().
-		WithArgs(1, newBook.Title, newBook.Rating, sqlmock.AnyArg()).
+		WithArgs(newBook.UserID, newBook.Title, newBook.Rating, sqlmock.AnyArg()).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
-	book, err := bookRepo.CreateBook(ctx, 1, newBook)
+	book, err := bookRepo.CreateBook(ctx, newBook)
 
 	assert.NoError(t, err)
 	assert.Equal(t, int64(1), book.ID)
@@ -131,14 +132,19 @@ func TestBookRepository_UpdateBook_Success(t *testing.T) {
 	bookRepo, mock := setupBookRepository(t)
 
 	ctx := context.Background()
-	updateBook := domain.Book{ID: 1, Title: "Updated Book", Rating: 5}
+	updateBook := domain.Book{
+		UserID: 1,
+		ID:     1,
+		Title:  "Updated Book",
+		Rating: 5,
+	}
 
 	mock.ExpectPrepare(`UPDATE book SET title = \?, rating = \? WHERE user_id = \? AND id = \?`).
 		ExpectExec().
-		WithArgs(updateBook.Title, updateBook.Rating, 1, updateBook.ID).
+		WithArgs(updateBook.Title, updateBook.Rating, updateBook.UserID, updateBook.ID).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
-	book, err := bookRepo.UpdateBook(ctx, 1, updateBook)
+	book, err := bookRepo.UpdateBook(ctx, updateBook)
 
 	assert.NoError(t, err)
 	assert.Equal(t, updateBook.Title, book.Title)

@@ -17,52 +17,6 @@ func (_m *ValidationService) EXPECT() *ValidationService_Expecter {
 	return &ValidationService_Expecter{mock: &_m.Mock}
 }
 
-// FormatValidationError provides a mock function with given fields: err
-func (_m *ValidationService) FormatValidationError(err error) error {
-	ret := _m.Called(err)
-
-	if len(ret) == 0 {
-		panic("no return value specified for FormatValidationError")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(error) error); ok {
-		r0 = rf(err)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// ValidationService_FormatValidationError_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FormatValidationError'
-type ValidationService_FormatValidationError_Call struct {
-	*mock.Call
-}
-
-// FormatValidationError is a helper method to define mock.On call
-//   - err error
-func (_e *ValidationService_Expecter) FormatValidationError(err interface{}) *ValidationService_FormatValidationError_Call {
-	return &ValidationService_FormatValidationError_Call{Call: _e.mock.On("FormatValidationError", err)}
-}
-
-func (_c *ValidationService_FormatValidationError_Call) Run(run func(err error)) *ValidationService_FormatValidationError_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(error))
-	})
-	return _c
-}
-
-func (_c *ValidationService_FormatValidationError_Call) Return(_a0 error) *ValidationService_FormatValidationError_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *ValidationService_FormatValidationError_Call) RunAndReturn(run func(error) error) *ValidationService_FormatValidationError_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // ValidateStruct provides a mock function with given fields: s
 func (_m *ValidationService) ValidateStruct(s interface{}) error {
 	ret := _m.Called(s)
