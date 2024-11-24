@@ -303,6 +303,67 @@ func (_c *BookRepository_GetBooksByUser_Call) RunAndReturn(run func(context.Cont
 	return _c
 }
 
+// SearchBooksByTitle provides a mock function with given fields: ctx, userID, title, limit
+func (_m *BookRepository) SearchBooksByTitle(ctx context.Context, userID int64, title string, limit int64) ([]domain.Book, error) {
+	ret := _m.Called(ctx, userID, title, limit)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SearchBooksByTitle")
+	}
+
+	var r0 []domain.Book
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, string, int64) ([]domain.Book, error)); ok {
+		return rf(ctx, userID, title, limit)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, string, int64) []domain.Book); ok {
+		r0 = rf(ctx, userID, title, limit)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.Book)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, string, int64) error); ok {
+		r1 = rf(ctx, userID, title, limit)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// BookRepository_SearchBooksByTitle_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SearchBooksByTitle'
+type BookRepository_SearchBooksByTitle_Call struct {
+	*mock.Call
+}
+
+// SearchBooksByTitle is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userID int64
+//   - title string
+//   - limit int64
+func (_e *BookRepository_Expecter) SearchBooksByTitle(ctx interface{}, userID interface{}, title interface{}, limit interface{}) *BookRepository_SearchBooksByTitle_Call {
+	return &BookRepository_SearchBooksByTitle_Call{Call: _e.mock.On("SearchBooksByTitle", ctx, userID, title, limit)}
+}
+
+func (_c *BookRepository_SearchBooksByTitle_Call) Run(run func(ctx context.Context, userID int64, title string, limit int64)) *BookRepository_SearchBooksByTitle_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(int64), args[2].(string), args[3].(int64))
+	})
+	return _c
+}
+
+func (_c *BookRepository_SearchBooksByTitle_Call) Return(_a0 []domain.Book, _a1 error) *BookRepository_SearchBooksByTitle_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *BookRepository_SearchBooksByTitle_Call) RunAndReturn(run func(context.Context, int64, string, int64) ([]domain.Book, error)) *BookRepository_SearchBooksByTitle_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // UpdateBook provides a mock function with given fields: ctx, book
 func (_m *BookRepository) UpdateBook(ctx context.Context, book domain.Book) (domain.Book, error) {
 	ret := _m.Called(ctx, book)

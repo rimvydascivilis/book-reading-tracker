@@ -28,15 +28,13 @@ func (a *BookHandler) GetBooks(c echo.Context) error {
 		ctx = context.Background()
 	}
 
-	page := getInt64QueryParam(c, "page", 1)
-	limit := getInt64QueryParam(c, "limit", 10)
-
 	userID, err := getUserIDFromToken(c)
 	if err != nil {
 		utils.Error("failed to get user id from token", err)
 		return c.JSON(http.StatusUnauthorized, ResponseError{Message: "Invalid token"})
 	}
 
+	page, limit := getPaginationParams(c)
 	books, hasMore, err := a.BookSvc.GetBooks(ctx, userID, page, limit)
 	if err != nil {
 		return handleServiceError(c, err)
@@ -46,6 +44,29 @@ func (a *BookHandler) GetBooks(c echo.Context) error {
 		"books":   books,
 		"hasMore": hasMore,
 	})
+}
+
+func (a *BookHandler) SearchBooks(c echo.Context) error {
+	ctx := c.Request().Context()
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	userID, err := getUserIDFromToken(c)
+	if err != nil {
+		utils.Error("failed to get user id from token", err)
+		return c.JSON(http.StatusUnauthorized, ResponseError{Message: "Invalid token"})
+	}
+
+	title := c.QueryParam("title")
+	limit := getInt64QueryParam(c, "limit", 10)
+
+	books, err := a.BookSvc.SearchBooks(ctx, userID, title, limit)
+	if err != nil {
+		return handleServiceError(c, err)
+	}
+
+	return c.JSON(http.StatusOK, books)
 }
 
 func (a *BookHandler) CreateBook(c echo.Context) error {

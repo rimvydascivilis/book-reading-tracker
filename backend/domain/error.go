@@ -8,4 +8,5 @@ var (
 	ErrValidation     = errors.New("validation error")
 	ErrAuthentication = errors.New("authentication error")
 	ErrRecordNotFound = errors.New("record not found")
+	ErrAlreadyExists  = errors.New("record already exists")
 )

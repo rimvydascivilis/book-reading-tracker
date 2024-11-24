@@ -14,7 +14,7 @@ import (
 func setupGoalService() (domain.GoalService, *mocks.GoalRepository, *mocks.ValidationService) {
 	goalRepo := new(mocks.GoalRepository)
 	validationSvc := new(mocks.ValidationService)
-	goalService := NewGoalService(goalRepo, validationSvc)
+	goalService := NewGoalService(goalRepo, nil, nil, validationSvc)
 
 	return goalService, goalRepo, validationSvc
 }

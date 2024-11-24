@@ -196,6 +196,67 @@ func (_c *BookService_GetBooks_Call) RunAndReturn(run func(context.Context, int6
 	return _c
 }
 
+// SearchBooks provides a mock function with given fields: ctx, userID, title, limit
+func (_m *BookService) SearchBooks(ctx context.Context, userID int64, title string, limit int64) ([]domain.Book, error) {
+	ret := _m.Called(ctx, userID, title, limit)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SearchBooks")
+	}
+
+	var r0 []domain.Book
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, string, int64) ([]domain.Book, error)); ok {
+		return rf(ctx, userID, title, limit)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64, string, int64) []domain.Book); ok {
+		r0 = rf(ctx, userID, title, limit)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.Book)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64, string, int64) error); ok {
+		r1 = rf(ctx, userID, title, limit)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// BookService_SearchBooks_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SearchBooks'
+type BookService_SearchBooks_Call struct {
+	*mock.Call
+}
+
+// SearchBooks is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userID int64
+//   - title string
+//   - limit int64
+func (_e *BookService_Expecter) SearchBooks(ctx interface{}, userID interface{}, title interface{}, limit interface{}) *BookService_SearchBooks_Call {
+	return &BookService_SearchBooks_Call{Call: _e.mock.On("SearchBooks", ctx, userID, title, limit)}
+}
+
+func (_c *BookService_SearchBooks_Call) Run(run func(ctx context.Context, userID int64, title string, limit int64)) *BookService_SearchBooks_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(int64), args[2].(string), args[3].(int64))
+	})
+	return _c
+}
+
+func (_c *BookService_SearchBooks_Call) Return(_a0 []domain.Book, _a1 error) *BookService_SearchBooks_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *BookService_SearchBooks_Call) RunAndReturn(run func(context.Context, int64, string, int64) ([]domain.Book, error)) *BookService_SearchBooks_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // UpdateBook provides a mock function with given fields: ctx, userID, book
 func (_m *BookService) UpdateBook(ctx context.Context, userID int64, book domain.Book) (domain.Book, error) {
 	ret := _m.Called(ctx, userID, book)

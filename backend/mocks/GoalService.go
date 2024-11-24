@@ -6,6 +6,8 @@ import (
 	context "context"
 
 	domain "github.com/rimvydascivilis/book-tracker/backend/domain"
+	dto "github.com/rimvydascivilis/book-tracker/backend/dto"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -75,6 +77,63 @@ func (_c *GoalService_GetGoal_Call) Return(_a0 domain.Goal, _a1 error) *GoalServ
 }
 
 func (_c *GoalService_GetGoal_Call) RunAndReturn(run func(context.Context, int64) (domain.Goal, error)) *GoalService_GetGoal_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetGoalProgress provides a mock function with given fields: ctx, userID
+func (_m *GoalService) GetGoalProgress(ctx context.Context, userID int64) (dto.GoalProgressResponse, error) {
+	ret := _m.Called(ctx, userID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetGoalProgress")
+	}
+
+	var r0 dto.GoalProgressResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (dto.GoalProgressResponse, error)); ok {
+		return rf(ctx, userID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64) dto.GoalProgressResponse); ok {
+		r0 = rf(ctx, userID)
+	} else {
+		r0 = ret.Get(0).(dto.GoalProgressResponse)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GoalService_GetGoalProgress_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetGoalProgress'
+type GoalService_GetGoalProgress_Call struct {
+	*mock.Call
+}
+
+// GetGoalProgress is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userID int64
+func (_e *GoalService_Expecter) GetGoalProgress(ctx interface{}, userID interface{}) *GoalService_GetGoalProgress_Call {
+	return &GoalService_GetGoalProgress_Call{Call: _e.mock.On("GetGoalProgress", ctx, userID)}
+}
+
+func (_c *GoalService_GetGoalProgress_Call) Run(run func(ctx context.Context, userID int64)) *GoalService_GetGoalProgress_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(int64))
+	})
+	return _c
+}
+
+func (_c *GoalService_GetGoalProgress_Call) Return(_a0 dto.GoalProgressResponse, _a1 error) *GoalService_GetGoalProgress_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *GoalService_GetGoalProgress_Call) RunAndReturn(run func(context.Context, int64) (dto.GoalProgressResponse, error)) *GoalService_GetGoalProgress_Call {
 	_c.Call.Return(run)
 	return _c
 }

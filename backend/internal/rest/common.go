@@ -46,6 +46,12 @@ func getUserIDFromToken(c echo.Context) (int64, error) {
 	return int64(userID), nil
 }
 
+func getPaginationParams(c echo.Context) (int64, int64) {
+	page := getInt64QueryParam(c, "page", 1)
+	limit := getInt64QueryParam(c, "limit", 10)
+	return page, limit
+}
+
 func handleServiceError(c echo.Context, err error) error {
 	if errors.Is(err, domain.ErrValidation) {
 		return c.JSON(http.StatusBadRequest, ResponseError{Message: err.Error()})
@@ -55,6 +61,9 @@ func handleServiceError(c echo.Context, err error) error {
 	}
 	if errors.Is(err, domain.ErrAuthentication) {
 		return c.JSON(http.StatusUnauthorized, ResponseError{Message: err.Error()})
+	}
+	if errors.Is(err, domain.ErrAlreadyExists) {
+		return c.JSON(http.StatusConflict, ResponseError{Message: err.Error()})
 	}
 
 	utils.Error("failed to handle request", err)
