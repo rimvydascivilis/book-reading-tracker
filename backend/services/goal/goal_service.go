@@ -16,7 +16,8 @@ type goalService struct {
 	validationSvc domain.ValidationService
 }
 
-func NewGoalService(repo domain.GoalRepository, progressRepo domain.ProgressRepository, readingRepo domain.ReadingRepository, validator domain.ValidationService) domain.GoalService {
+func NewGoalService(repo domain.GoalRepository, progressRepo domain.ProgressRepository,
+	readingRepo domain.ReadingRepository, validator domain.ValidationService) domain.GoalService {
 	return &goalService{
 		goalRepo:      repo,
 		progressRepo:  progressRepo,

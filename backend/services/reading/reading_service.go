@@ -16,7 +16,8 @@ type ReadingService struct {
 	validationSvc domain.ValidationService
 }
 
-func NewReadingService(repo domain.ReadingRepository, progressRepo domain.ProgressRepository, bookRepo domain.BookRepository, validationSvc domain.ValidationService) *ReadingService {
+func NewReadingService(repo domain.ReadingRepository, progressRepo domain.ProgressRepository,
+	bookRepo domain.BookRepository, validationSvc domain.ValidationService) *ReadingService {
 	return &ReadingService{
 		readingRepo:   repo,
 		progressRepo:  progressRepo,
