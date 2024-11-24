@@ -62,12 +62,16 @@ func (r *ReadingRepository) getOne(ctx context.Context, query string, args ...in
 }
 
 func (r *ReadingRepository) GetReadingsByUserID(ctx context.Context, userID, offset, limit int64) ([]domain.Reading, error) {
-	query := `SELECT id, user_id, book_id, total_pages, COALESCE(link, ''), created_at, updated_at FROM reading WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`
+	query := `
+SELECT id, user_id, book_id, total_pages, COALESCE(link, ''), created_at, updated_at
+FROM reading WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`
 	return r.getAll(ctx, query, userID, limit, offset)
 }
 
 func (r *ReadingRepository) GetReadingByID(ctx context.Context, id int64) (domain.Reading, error) {
-	query := `SELECT id, user_id, book_id, total_pages, COALESCE(link, ''), created_at, updated_at FROM reading WHERE id = ?`
+	query := `
+SELECT id, user_id, book_id, total_pages, COALESCE(link, ''), created_at, updated_at
+FROM reading WHERE id = ?`
 	return r.getOne(ctx, query, id)
 }
 
