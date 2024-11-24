@@ -18,6 +18,8 @@ import (
 	"github.com/rimvydascivilis/book-tracker/backend/services/auth"
 	"github.com/rimvydascivilis/book-tracker/backend/services/book"
 	"github.com/rimvydascivilis/book-tracker/backend/services/goal"
+	"github.com/rimvydascivilis/book-tracker/backend/services/progress"
+	"github.com/rimvydascivilis/book-tracker/backend/services/reading"
 	"github.com/rimvydascivilis/book-tracker/backend/services/user"
 	"github.com/rimvydascivilis/book-tracker/backend/services/validation"
 	"github.com/rimvydascivilis/book-tracker/backend/utils"
@@ -80,6 +82,8 @@ func main() {
 	userRepo := mariadbRepo.NewUserRepository(dbConn)
 	bookRepo := mariadbRepo.NewBookRepository(dbConn)
 	goalRepo := mariadbRepo.NewGoalRepository(dbConn)
+	readingRepo := mariadbRepo.NewReadingRepository(dbConn)
+	progressRepo := mariadbRepo.NewProgressRepository(dbConn)
 
 	// Services
 	validationSvc := validation.NewValidationService()
@@ -91,12 +95,16 @@ func main() {
 	userSvc := user.NewUserService(userRepo, validationSvc)
 	authSvc := auth.NewAuthService(userSvc, googleOauth2Svc, jwtSvc)
 	bookSvc := book.NewBookService(bookRepo, validationSvc)
-	goalSvc := goal.NewGoalService(goalRepo, validationSvc)
+	goalSvc := goal.NewGoalService(goalRepo, progressRepo, readingRepo, validationSvc)
+	readingSvc := reading.NewReadingService(readingRepo, progressRepo, bookRepo, validationSvc)
+	progressSvc := progress.NewProgressService(progressRepo, readingRepo, validationSvc)
 
 	// Handlers
 	authH := rest.NewAuthHandler(authSvc)
 	bookH := rest.NewBookHandler(bookSvc)
 	goalH := rest.NewGoalHandler(goalSvc)
+	readingH := rest.NewReadingHandler(readingSvc)
+	progressH := rest.NewProgressHandler(progressSvc)
 
 	// Route groups
 	api := e.Group("/api")
@@ -110,12 +118,19 @@ func main() {
 
 	// Authenticated routes
 	authenticatedApi.GET("/books", bookH.GetBooks)
+	authenticatedApi.GET("/books/search", bookH.SearchBooks)
 	authenticatedApi.POST("/books", bookH.CreateBook)
 	authenticatedApi.PUT("/books/:id", bookH.UpdateBook)
 	authenticatedApi.DELETE("/books/:id", bookH.DeleteBook)
 
 	authenticatedApi.GET("/goal", goalH.GetGoal)
+	authenticatedApi.GET("/goal/progress", goalH.GetGoalProgress)
 	authenticatedApi.PUT("/goal", goalH.SetGoal)
+
+	authenticatedApi.GET("/readings", readingH.GetReadings)
+	authenticatedApi.POST("/readings", readingH.CreateReading)
+
+	authenticatedApi.POST("/progress/:readingId", progressH.CreateProgress)
 
 	log.Fatal(e.Start(cfg.ServerAddr))
 }

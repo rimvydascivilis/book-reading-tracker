@@ -3,18 +3,25 @@ package goal
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/rimvydascivilis/book-tracker/backend/domain"
+	"github.com/rimvydascivilis/book-tracker/backend/dto"
 )
 
 type goalService struct {
 	goalRepo      domain.GoalRepository
+	progressRepo  domain.ProgressRepository
+	readingRepo   domain.ReadingRepository
 	validationSvc domain.ValidationService
 }
 
-func NewGoalService(repo domain.GoalRepository, validator domain.ValidationService) domain.GoalService {
+func NewGoalService(repo domain.GoalRepository, progressRepo domain.ProgressRepository,
+	readingRepo domain.ReadingRepository, validator domain.ValidationService) domain.GoalService {
 	return &goalService{
 		goalRepo:      repo,
+		progressRepo:  progressRepo,
+		readingRepo:   readingRepo,
 		validationSvc: validator,
 	}
 }
@@ -58,4 +65,53 @@ func (s *goalService) SetGoal(ctx context.Context, userID int64, goal domain.Goa
 	}
 
 	return domain.Goal{}, err
+}
+
+func (s *goalService) GetGoalProgress(ctx context.Context, userID int64) (dto.GoalProgressResponse, error) {
+	goal, err := s.goalRepo.GetGoalByUserID(ctx, userID)
+	if err != nil {
+		return dto.GoalProgressResponse{}, err
+	}
+
+	period := ""
+	if goal.Frequency == domain.GoalFrequencyDaily {
+		period = time.Now().Format("2006-01-02")
+	} else if goal.Frequency == domain.GoalFrequencyMonthly {
+		period = time.Now().Format("2006-01")
+	}
+	readingIDs, err := s.progressRepo.GetUserReadingIDsByPeriod(ctx, userID, period)
+
+	if err != nil {
+		return dto.GoalProgressResponse{}, err
+	}
+
+	var progress int64
+	for _, readingID := range readingIDs {
+		totalProgress, err := s.progressRepo.GetTotalProgressByReadingID(ctx, readingID)
+
+		if err != nil {
+			return dto.GoalProgressResponse{}, err
+		}
+
+		if goal.Type == domain.GoalTypePages {
+			progress += totalProgress
+		} else if goal.Type == domain.GoalTypeBooks {
+			reading, err := s.readingRepo.GetReadingByID(ctx, readingID)
+			if err != nil {
+				return dto.GoalProgressResponse{}, err
+			}
+
+			if reading.GetStatus(totalProgress) == domain.ReadingStatusCompleted {
+				progress++
+			}
+		}
+	}
+
+	progress = min(progress, goal.Value)
+	goalProgress := dto.GoalProgressResponse{
+		Percentage: float64(progress) / float64(goal.Value) * 100,
+		Left:       goal.Value - progress,
+	}
+
+	return goalProgress, nil
 }

@@ -3,3 +3,8 @@ export interface IGoal {
   frequency: 'daily' | 'monthly';
   value: number;
 }
+
+export interface IGoalProgress {
+  percentage: number;
+  left: number;
+}

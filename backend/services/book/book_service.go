@@ -11,7 +11,7 @@ type bookService struct {
 	validationSvc domain.ValidationService
 }
 
-func NewBookService(repo domain.BookRepository, validator domain.ValidationService) domain.BookService {
+func NewBookService(repo domain.BookRepository, validator domain.ValidationService) *bookService {
 	return &bookService{
 		bookRepo:      repo,
 		validationSvc: validator,
@@ -55,6 +55,17 @@ func (s *bookService) GetBooks(ctx context.Context, userID, page, limit int64) (
 	}
 
 	return books, hasMore, nil
+}
+
+func (s *bookService) SearchBooks(ctx context.Context, userID int64, title string, limit int64) ([]domain.Book, error) {
+	if limit < 1 {
+		limit = 10
+	}
+	if limit > 20 {
+		limit = 20
+	}
+
+	return s.bookRepo.SearchBooksByTitle(ctx, userID, title, limit)
 }
 
 func (s *bookService) UpdateBook(ctx context.Context, userID int64, book domain.Book) (domain.Book, error) {

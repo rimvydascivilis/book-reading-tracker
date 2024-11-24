@@ -1,4 +1,6 @@
 -- Drop tables if they already exist
+DROP TABLE IF EXISTS progress;
+Drop TABLE IF EXISTS reading;
 DROP TABLE IF EXISTS goal;
 DROP TABLE IF EXISTS book;
 DROP TABLE IF EXISTS user;
@@ -30,4 +32,30 @@ CREATE TABLE book (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+-- reading table
+CREATE TABLE reading (
+    id INT NOT NULL AUTO_INCREMENT,
+    book_id INT NOT NULL,
+    user_id INT NOT NULL,
+    total_pages INT NOT NULL CHECK (total_pages > 0),
+    link VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE
+);
+
+-- progress table
+CREATE TABLE progress (
+    id INT NOT NULL AUTO_INCREMENT,
+    reading_id INT NOT NULL,
+    user_id INT NOT NULL,
+    pages INT NOT NULL CHECK (pages > 0),
+    reading_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (reading_id) REFERENCES reading(id) ON DELETE CASCADE
 );

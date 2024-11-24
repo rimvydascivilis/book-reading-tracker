@@ -15,6 +15,9 @@ api.interceptors.request.use(
     return config;
   },
   error => {
+    if (error.response.status === 401) {
+      // TODO: Handle unauthorized error
+    }
     return Promise.reject(error);
   },
 );

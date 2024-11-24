@@ -103,6 +103,11 @@ func (m *BookRepository) GetBookByUserID(ctx context.Context, userID, bookID int
 	return b, nil
 }
 
+func (m *BookRepository) SearchBooksByTitle(ctx context.Context, userID int64, title string, limit int64) ([]domain.Book, error) {
+	query := `SELECT id, title, rating, created_at FROM book WHERE user_id = ? AND title LIKE ? LIMIT ?`
+	return m.getAll(ctx, query, userID, "%"+title+"%", limit)
+}
+
 func (m *BookRepository) UpdateBook(ctx context.Context, b domain.Book) (domain.Book, error) {
 	query := `UPDATE book SET title = ?, rating = ? WHERE user_id = ? AND id = ?`
 	stmt, err := m.DB.PrepareContext(ctx, query)
