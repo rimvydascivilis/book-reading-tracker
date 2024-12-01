@@ -87,15 +87,19 @@ func (s *goalService) GetGoalProgress(ctx context.Context, userID int64) (dto.Go
 
 	var progress int64
 	for _, readingID := range readingIDs {
-		totalProgress, err := s.progressRepo.GetTotalProgressByReadingID(ctx, readingID)
-
-		if err != nil {
-			return dto.GoalProgressResponse{}, err
-		}
-
 		if goal.Type == domain.GoalTypePages {
-			progress += totalProgress
+			dayProgress, err := s.progressRepo.GetProgressByReadingAndDate(ctx, readingID, period)
+			if err != nil {
+				return dto.GoalProgressResponse{}, err
+			}
+
+			progress += dayProgress
 		} else if goal.Type == domain.GoalTypeBooks {
+			totalProgress, err := s.progressRepo.GetTotalProgressByReadingID(ctx, readingID)
+			if err != nil {
+				return dto.GoalProgressResponse{}, err
+			}
+
 			reading, err := s.readingRepo.GetReadingByID(ctx, readingID)
 			if err != nil {
 				return dto.GoalProgressResponse{}, err

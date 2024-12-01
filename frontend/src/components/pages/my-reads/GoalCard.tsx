@@ -43,7 +43,7 @@ const GoalCard: React.FC<GoalCardProps> = ({progress}) => {
         {goal.frequency === 'daily' ? 'day' : 'month'}
       </h2>
       <Progress
-        percent={progress.percentage}
+        percent={Math.floor(progress.percentage)}
         status={progress.left === 0 ? 'success' : 'active'}
       />
 

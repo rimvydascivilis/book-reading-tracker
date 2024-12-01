@@ -36,6 +36,7 @@ type ReadingRepository interface {
 
 type ProgressRepository interface {
 	GetTotalProgressByReadingID(ctx context.Context, readingID int64) (int64, error)
+	GetProgressByReadingAndDate(ctx context.Context, readingID int64, date string) (int64, error)
 	GetUserReadingIDsByPeriod(ctx context.Context, userID int64, period string) ([]int64, error)
 	CreateProgress(ctx context.Context, progressReq Progress) (Progress, error)
 }

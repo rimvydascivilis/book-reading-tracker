@@ -69,15 +69,39 @@ WHERE user_id = ?
 	return readingIDs, nil
 }
 
+func (m *ProgressRepository) GetProgressByReadingAndDate(ctx context.Context, readingID int64, date string) (int64, error) {
+	query := `
+SELECT COALESCE(SUM(pages), 0) FROM progress
+WHERE reading_id = ?
+	AND (
+		(CHAR_LENGTH(?) = 7 AND DATE_FORMAT(reading_date, '%Y-%m') = ?) OR
+		(CHAR_LENGTH(?) = 10 AND DATE(reading_date) = ?)
+	)
+`
+	stmt, err := m.DB.Prepare(query)
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+
+	var progress int64
+	err = stmt.QueryRow(readingID, date, date, date, date).Scan(&progress)
+	if err != nil {
+		return 0, err
+	}
+
+	return progress, nil
+}
+
 func (m *ProgressRepository) CreateProgress(ctx context.Context, progress domain.Progress) (domain.Progress, error) {
-	query := `INSERT INTO progress (reading_id, user_id, pages) VALUES (?, ?, ?)`
+	query := `INSERT INTO progress (reading_id, user_id, pages, reading_date) VALUES (?, ?, ?, ?)`
 	stmt, err := m.DB.Prepare(query)
 	if err != nil {
 		return domain.Progress{}, err
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(progress.ReadingID, progress.UserID, progress.Pages)
+	res, err := stmt.Exec(progress.ReadingID, progress.UserID, progress.Pages, progress.ReadingDate)
 	if err != nil {
 		return domain.Progress{}, err
 	}
