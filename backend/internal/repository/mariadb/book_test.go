@@ -93,12 +93,12 @@ func TestBookRepository_GetBookByUserID_Success(t *testing.T) {
 	bookRepo, mock := setupBookRepository(t)
 
 	ctx := context.Background()
-	testBook := domain.Book{ID: 1, Title: "Book 1", Rating: 5, CreatedAt: time.Now()}
+	testBook := domain.Book{ID: 1, UserID: 1, Title: "Book 1", Rating: 5, CreatedAt: time.Now()}
 
-	rows := sqlmock.NewRows([]string{"id", "title", "rating", "created_at"}).
-		AddRow(testBook.ID, testBook.Title, testBook.Rating, testBook.CreatedAt)
+	rows := sqlmock.NewRows([]string{"id", "user_id", "title", "rating", "created_at"}).
+		AddRow(testBook.ID, testBook.UserID, testBook.Title, testBook.Rating, testBook.CreatedAt)
 
-	mock.ExpectPrepare(`SELECT id, title, rating, created_at FROM book WHERE user_id = \? AND id = \?`).
+	mock.ExpectPrepare(`SELECT id, user_id, title, rating, created_at FROM book WHERE user_id = \? AND id = \?`).
 		ExpectQuery().
 		WithArgs(1, 1).
 		WillReturnRows(rows)
@@ -115,7 +115,7 @@ func TestBookRepository_GetBookByUserID_NotFound(t *testing.T) {
 
 	ctx := context.Background()
 
-	mock.ExpectPrepare(`SELECT id, title, rating, created_at FROM book WHERE user_id = \? AND id = \?`).
+	mock.ExpectPrepare(`SELECT id, user_id, title, rating, created_at FROM book WHERE user_id = \? AND id = \?`).
 		ExpectQuery().
 		WithArgs(1, 99).
 		WillReturnError(sql.ErrNoRows)

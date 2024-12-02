@@ -18,6 +18,7 @@ import (
 	"github.com/rimvydascivilis/book-tracker/backend/services/auth"
 	"github.com/rimvydascivilis/book-tracker/backend/services/book"
 	"github.com/rimvydascivilis/book-tracker/backend/services/goal"
+	"github.com/rimvydascivilis/book-tracker/backend/services/list"
 	"github.com/rimvydascivilis/book-tracker/backend/services/progress"
 	"github.com/rimvydascivilis/book-tracker/backend/services/reading"
 	"github.com/rimvydascivilis/book-tracker/backend/services/user"
@@ -84,6 +85,8 @@ func main() {
 	goalRepo := mariadbRepo.NewGoalRepository(dbConn)
 	readingRepo := mariadbRepo.NewReadingRepository(dbConn)
 	progressRepo := mariadbRepo.NewProgressRepository(dbConn)
+	listRepo := mariadbRepo.NewListRepository(dbConn)
+	listItemRepo := mariadbRepo.NewListItemRepository(dbConn)
 
 	// Services
 	validationSvc := validation.NewValidationService()
@@ -98,6 +101,7 @@ func main() {
 	goalSvc := goal.NewGoalService(goalRepo, progressRepo, readingRepo, validationSvc)
 	readingSvc := reading.NewReadingService(readingRepo, progressRepo, bookRepo, validationSvc)
 	progressSvc := progress.NewProgressService(progressRepo, readingRepo, validationSvc)
+	listSvc := list.NewListService(listRepo, listItemRepo, bookRepo, validationSvc)
 
 	// Handlers
 	authH := rest.NewAuthHandler(authSvc)
@@ -105,6 +109,7 @@ func main() {
 	goalH := rest.NewGoalHandler(goalSvc)
 	readingH := rest.NewReadingHandler(readingSvc)
 	progressH := rest.NewProgressHandler(progressSvc)
+	listH := rest.NewListHandler(listSvc)
 
 	// Route groups
 	api := e.Group("/api")
@@ -131,6 +136,12 @@ func main() {
 	authenticatedApi.POST("/readings", readingH.CreateReading)
 
 	authenticatedApi.POST("/progress/:readingId", progressH.CreateProgress)
+
+	authenticatedApi.GET("/lists", listH.ListLists)
+	authenticatedApi.GET("/list", listH.GetList)                                      // ?list_id=1
+	authenticatedApi.POST("/list", listH.CreateList)                                  // {"title": "My list"}
+	authenticatedApi.POST("/list/item", listH.AddBookToList)                          // {"list_id": 1, "book_id": 1}
+	authenticatedApi.DELETE("/list/:list_id/item/:item_id", listH.RemoveBookFromList) // /list/1/item/1
 
 	log.Fatal(e.Start(cfg.ServerAddr))
 }

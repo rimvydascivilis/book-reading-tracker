@@ -2,7 +2,11 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import PathConstants from '../../routes/PathConstants';
 import {Layout, Menu} from 'antd';
-import {BankOutlined as LibraryOutlined, BookOutlined} from '@ant-design/icons';
+import {
+  BankOutlined as LibraryOutlined,
+  BookOutlined,
+  UnorderedListOutlined,
+} from '@ant-design/icons';
 
 const {Sider} = Layout;
 
@@ -15,6 +19,12 @@ const items = [
   },
   {
     key: '2',
+    icon: <UnorderedListOutlined />,
+    label: 'Lists',
+    path: PathConstants.LISTS,
+  },
+  {
+    key: '3',
     icon: <LibraryOutlined />,
     label: 'Library',
     path: PathConstants.LIBRARY,

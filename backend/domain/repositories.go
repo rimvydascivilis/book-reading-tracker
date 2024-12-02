@@ -40,3 +40,15 @@ type ProgressRepository interface {
 	GetUserReadingIDsByPeriod(ctx context.Context, userID int64, period string) ([]int64, error)
 	CreateProgress(ctx context.Context, progressReq Progress) (Progress, error)
 }
+
+type ListRepository interface {
+	GetListByID(ctx context.Context, listID int64) (List, error)
+	GetListsByUserID(ctx context.Context, userID int64) ([]List, error)
+	CreateList(ctx context.Context, list List) (List, error)
+}
+
+type ListItemRepository interface {
+	GetListItemsByListID(ctx context.Context, listID int64) ([]ListItem, error)
+	CreateListItem(ctx context.Context, listItem ListItem) (ListItem, error)
+	DeleteListItem(ctx context.Context, id int64) error
+}

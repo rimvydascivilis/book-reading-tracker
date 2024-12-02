@@ -65,6 +65,9 @@ func handleServiceError(c echo.Context, err error) error {
 	if errors.Is(err, domain.ErrAlreadyExists) {
 		return c.JSON(http.StatusConflict, ResponseError{Message: err.Error()})
 	}
+	if errors.Is(err, domain.ErrForbidden) {
+		return c.JSON(http.StatusForbidden, ResponseError{Message: err.Error()})
+	}
 
 	utils.Error("failed to handle request", err)
 	return c.JSON(http.StatusInternalServerError, ResponseError{Message: "server error"})

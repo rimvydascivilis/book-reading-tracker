@@ -59,3 +59,24 @@ CREATE TABLE progress (
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (reading_id) REFERENCES reading(id) ON DELETE CASCADE
 );
+
+-- list table
+CREATE TABLE list (
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+-- list_item table
+CREATE TABLE list_item (
+    id INT NOT NULL AUTO_INCREMENT,
+    list_id INT NOT NULL,
+    book_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (list_id) REFERENCES list(id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE
+);

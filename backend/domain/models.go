@@ -65,3 +65,17 @@ type Progress struct {
 	Pages       int64     `json:"pages" validate:"required,min=1"`
 	ReadingDate time.Time `json:"reading_date" validate:"required"`
 }
+
+type List struct {
+	ID        int64     `json:"id"`
+	UserID    int64     `json:"user_id" validate:"required"`
+	Title     string    `json:"title" validate:"required,min=1,max=50"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type ListItem struct {
+	ID        int64     `json:"id"`
+	ListID    int64     `json:"list_id" validate:"required"`
+	BookID    int64     `json:"book_id" validate:"required"`
+	CreatedAt time.Time `json:"created_at"`
+}

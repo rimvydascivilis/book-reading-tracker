@@ -48,3 +48,11 @@ type ReadingService interface {
 type ProgressService interface {
 	CreateProgress(ctx context.Context, userID, readingID int64, progressReq dto.ProgressRequest) (Progress, error)
 }
+
+type ListService interface {
+	ListLists(ctx context.Context, userID int64) ([]dto.ListListsResponse, error)
+	GetList(ctx context.Context, userID int64, listID int64) (dto.ListResponse, error)
+	CreateList(ctx context.Context, userID int64, list dto.ListRequest) (dto.ListResponse, error)
+	AddBookToList(ctx context.Context, userID, listID, bookID int64) error
+	RemoveBookFromList(ctx context.Context, userID, listID, bookID int64) error
+}

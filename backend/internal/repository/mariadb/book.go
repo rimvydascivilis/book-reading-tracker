@@ -19,6 +19,26 @@ func NewBookRepository(db *sql.DB) *BookRepository {
 	}
 }
 
+func (m *BookRepository) getOne(ctx context.Context, query string, args ...interface{}) (domain.Book, error) {
+	stmt, err := m.DB.PrepareContext(ctx, query)
+	if err != nil {
+		return domain.Book{}, err
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRowContext(ctx, args...)
+	b := domain.Book{}
+	err = row.Scan(&b.ID, &b.UserID, &b.Title, &b.Rating, &b.CreatedAt)
+	if err == sql.ErrNoRows {
+		return domain.Book{}, fmt.Errorf("%w: %s", domain.ErrRecordNotFound, "book")
+	}
+	if err != nil {
+		return domain.Book{}, err
+	}
+
+	return b, nil
+}
+
 func (m *BookRepository) getAll(ctx context.Context, query string, args ...interface{}) (res []domain.Book, err error) {
 	stmt, err := m.DB.PrepareContext(ctx, query)
 	if err != nil {
@@ -84,23 +104,8 @@ func (m *BookRepository) CreateBook(ctx context.Context, b domain.Book) (domain.
 }
 
 func (m *BookRepository) GetBookByUserID(ctx context.Context, userID, bookID int64) (domain.Book, error) {
-	query := `SELECT id, title, rating, created_at FROM book WHERE user_id = ? AND id = ?`
-	stmt, err := m.DB.PrepareContext(ctx, query)
-	if err != nil {
-		return domain.Book{}, err
-	}
-	defer stmt.Close()
-
-	row := stmt.QueryRowContext(ctx, userID, bookID)
-	b := domain.Book{}
-	err = row.Scan(&b.ID, &b.Title, &b.Rating, &b.CreatedAt)
-	if err == sql.ErrNoRows {
-		return domain.Book{}, fmt.Errorf("%w: %s", domain.ErrRecordNotFound, "book")
-	}
-	if err != nil {
-		return domain.Book{}, err
-	}
-	return b, nil
+	query := `SELECT id, user_id, title, rating, created_at FROM book WHERE user_id = ? AND id = ?`
+	return m.getOne(ctx, query, userID, bookID)
 }
 
 func (m *BookRepository) SearchBooksByTitle(ctx context.Context, userID int64, title string, limit int64) ([]domain.Book, error) {
