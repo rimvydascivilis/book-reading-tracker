@@ -5,6 +5,7 @@ const PathConstants = {
   GOAL: '/goal',
   MY_READS: '/my-reads',
   LISTS: '/lists',
+  NOTES: '/notes',
 };
 
 export default PathConstants;

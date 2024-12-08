@@ -19,6 +19,7 @@ import (
 	"github.com/rimvydascivilis/book-tracker/backend/services/book"
 	"github.com/rimvydascivilis/book-tracker/backend/services/goal"
 	"github.com/rimvydascivilis/book-tracker/backend/services/list"
+	"github.com/rimvydascivilis/book-tracker/backend/services/note"
 	"github.com/rimvydascivilis/book-tracker/backend/services/progress"
 	"github.com/rimvydascivilis/book-tracker/backend/services/reading"
 	"github.com/rimvydascivilis/book-tracker/backend/services/user"
@@ -87,6 +88,7 @@ func main() {
 	progressRepo := mariadbRepo.NewProgressRepository(dbConn)
 	listRepo := mariadbRepo.NewListRepository(dbConn)
 	listItemRepo := mariadbRepo.NewListItemRepository(dbConn)
+	noteRepo := mariadbRepo.NewNoteRepository(dbConn)
 
 	// Services
 	validationSvc := validation.NewValidationService()
@@ -102,6 +104,7 @@ func main() {
 	readingSvc := reading.NewReadingService(readingRepo, progressRepo, bookRepo, validationSvc)
 	progressSvc := progress.NewProgressService(progressRepo, readingRepo, validationSvc)
 	listSvc := list.NewListService(listRepo, listItemRepo, bookRepo, validationSvc)
+	noteSvc := note.NewNoteService(bookRepo, noteRepo, validationSvc)
 
 	// Handlers
 	authH := rest.NewAuthHandler(authSvc)
@@ -110,6 +113,7 @@ func main() {
 	readingH := rest.NewReadingHandler(readingSvc)
 	progressH := rest.NewProgressHandler(progressSvc)
 	listH := rest.NewListHandler(listSvc)
+	noteH := rest.NewNoteHandler(noteSvc)
 
 	// Route groups
 	api := e.Group("/api")
@@ -123,7 +127,7 @@ func main() {
 
 	// Authenticated routes
 	authenticatedApi.GET("/books", bookH.GetBooks)
-	authenticatedApi.GET("/books/search", bookH.SearchBooks)
+	authenticatedApi.GET("/books/search", bookH.SearchBooks) // ?title=My%20book
 	authenticatedApi.POST("/books", bookH.CreateBook)
 	authenticatedApi.PUT("/books/:id", bookH.UpdateBook)
 	authenticatedApi.DELETE("/books/:id", bookH.DeleteBook)
@@ -142,6 +146,10 @@ func main() {
 	authenticatedApi.POST("/list", listH.CreateList)                                  // {"title": "My list"}
 	authenticatedApi.POST("/list/item", listH.AddBookToList)                          // {"list_id": 1, "book_id": 1}
 	authenticatedApi.DELETE("/list/:list_id/item/:item_id", listH.RemoveBookFromList) // /list/1/item/1
+
+	authenticatedApi.GET("/notes/:book_id", noteH.GetNotes)      // /notes/1
+	authenticatedApi.POST("/notes/:book_id", noteH.CreateNote)   // /notes/1 {"page_number": 1, "content": "My note"}
+	authenticatedApi.DELETE("/notes/:note_id", noteH.DeleteNote) // /notes/1
 
 	log.Fatal(e.Start(cfg.ServerAddr))
 }

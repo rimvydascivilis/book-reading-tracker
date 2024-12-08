@@ -52,3 +52,11 @@ type ListItemRepository interface {
 	CreateListItem(ctx context.Context, listItem ListItem) (ListItem, error)
 	DeleteListItem(ctx context.Context, id int64) error
 }
+
+type NoteRepository interface {
+	GetNoteByUserID(ctx context.Context, noteID, userID int64) (Note, error)
+	GetBookIDsByUserID(ctx context.Context, userID int64) ([]int64, error)
+	GetNotesByUserIDAndBookID(ctx context.Context, userID, bookID int64) ([]Note, error)
+	CreateNote(ctx context.Context, note Note) (Note, error)
+	DeleteNote(ctx context.Context, id int64) error
+}

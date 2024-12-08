@@ -79,3 +79,12 @@ type ListItem struct {
 	BookID    int64     `json:"book_id" validate:"required"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type Note struct {
+	ID         int64     `json:"id"`
+	UserID     int64     `json:"user_id" validate:"required"`
+	BookID     int64     `json:"book_id" validate:"required"`
+	PageNumber int64     `json:"page_number" validate:"required,min=1"`
+	Content    string    `json:"content" validate:"required"`
+	CreatedAt  time.Time `json:"created_at"`
+}

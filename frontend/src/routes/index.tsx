@@ -12,6 +12,7 @@ const MyReads = React.lazy(
   () => import('../components/pages/my-reads/MyReadsPage'),
 );
 const Lists = React.lazy(() => import('../components/pages/lists/ListsPage'));
+const Notes = React.lazy(() => import('../components/pages/notes/NotesPage'));
 
 const protectedRoutes = [
   {
@@ -29,6 +30,10 @@ const protectedRoutes = [
   {
     path: PathConstants.LISTS,
     component: Lists,
+  },
+  {
+    path: PathConstants.NOTES,
+    component: Notes,
   },
 ];
 

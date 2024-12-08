@@ -56,3 +56,9 @@ type ListService interface {
 	AddBookToList(ctx context.Context, userID, listID, bookID int64) error
 	RemoveBookFromList(ctx context.Context, userID, listID, bookID int64) error
 }
+
+type NoteService interface {
+	GetNotes(ctx context.Context, userID, bookID int64) ([]dto.NoteResponse, error)
+	CreateNote(ctx context.Context, userID, bookID int64, note dto.NoteRequest) (dto.NoteResponse, error)
+	DeleteNote(ctx context.Context, userID, noteID int64) error
+}

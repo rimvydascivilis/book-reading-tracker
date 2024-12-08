@@ -6,6 +6,7 @@ import {
   BankOutlined as LibraryOutlined,
   BookOutlined,
   UnorderedListOutlined,
+  EditOutlined as NotesOutlined,
 } from '@ant-design/icons';
 
 const {Sider} = Layout;
@@ -25,6 +26,12 @@ const items = [
   },
   {
     key: '3',
+    icon: <NotesOutlined />,
+    label: 'Notes',
+    path: PathConstants.NOTES,
+  },
+  {
+    key: '4',
     icon: <LibraryOutlined />,
     label: 'Library',
     path: PathConstants.LIBRARY,

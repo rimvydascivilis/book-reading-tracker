@@ -1,4 +1,7 @@
 -- Drop tables if they already exist
+DROP TABLE IF EXISTS note;
+DROP TABLE IF EXISTS list_item;
+DROP TABLE IF EXISTS list;
 DROP TABLE IF EXISTS progress;
 Drop TABLE IF EXISTS reading;
 DROP TABLE IF EXISTS goal;
@@ -78,5 +81,18 @@ CREATE TABLE list_item (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (list_id) REFERENCES list(id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE
+);
+
+-- note table
+CREATE TABLE note (
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    page_number INT NOT NULL CHECK (page_number > 0),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE
 );
