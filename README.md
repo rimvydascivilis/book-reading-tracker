@@ -20,8 +20,11 @@ The Book Tracking System is a web application where users can log their reading 
 ![Sprint 2](./img/sprint-2-2.png)
 
 #### Sprint 3:
-- [ ] Adding notes to book pages (e.g., favorite quotes or reflections).
+- [x] Adding notes to book pages (e.g., favorite quotes or reflections).
 - [x] Managing a list of books to read.
+
+![Sprint 3](./img/sprint-3-1.png)
+![Sprint 3](./img/sprint-3-2.png)
 
 #### Sprint 4:
 - [ ] Visualization of daily reading statistics.
