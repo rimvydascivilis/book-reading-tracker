@@ -27,8 +27,11 @@ The Book Tracking System is a web application where users can log their reading 
 ![Sprint 3](./img/sprint-3-2.png)
 
 #### Sprint 4:
-- [ ] Visualization of daily reading statistics.
-- [ ] Exporting lists (e.g., books to read or favorite books).
+- [x] Visualization of daily reading statistics.
+- [x] Exporting lists (e.g., books to read or favorite books).
+
+![Sprint 3](./img/sprint-4-1.png)
+![Sprint 3](./img/sprint-4-2.png)
 
 ## Technologies Used
 - Frontend: React (with lazy loading for efficient route management)
