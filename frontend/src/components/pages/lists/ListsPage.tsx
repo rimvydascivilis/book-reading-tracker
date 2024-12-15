@@ -42,6 +42,11 @@ const ListsPage: React.FC = () => {
     fetchLists();
   }, []);
 
+  const getListName = () => {
+    const list = lists.find(list => list.id === selectedList);
+    return list ? list.title : '';
+  };
+
   return (
     <div>
       <ListSelector
@@ -51,7 +56,7 @@ const ListsPage: React.FC = () => {
         onAddList={() => setIsModalVisible(true)}
       />
       {selectedList ? (
-        <ListDetails id={selectedList} />
+        <ListDetails id={selectedList} listName={getListName()} />
       ) : (
         <Typography.Text>Select a list to see its items.</Typography.Text>
       )}

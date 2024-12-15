@@ -14,12 +14,14 @@ import {
 import {DeleteOutlined} from '@ant-design/icons';
 import api from '../../../api/api';
 import {ListItem} from '../../../types/listTypes';
+import ExportListModal from './ExportListModal';
 import {IAxiosError} from '../../../types/errorTypes';
 
 const {Option} = Select;
 
 interface ListDetailsProps {
   id: number;
+  listName: string;
 }
 
 interface IBook {
@@ -27,12 +29,13 @@ interface IBook {
   title: string;
 }
 
-const ListDetails: React.FC<ListDetailsProps> = ({id}) => {
+const ListDetails: React.FC<ListDetailsProps> = ({id, listName}) => {
   const [items, setItems] = useState<ListItem[]>([]);
   const [bookSuggestions, setBookSuggestions] = useState<IBook[]>([]);
   const [selectedBook, setSelectedBook] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [isExportModalVisible, setExportModalVisible] = useState(false);
 
   const fetchListItems = async (listId: number) => {
     setLoading(true);
@@ -120,7 +123,7 @@ const ListDetails: React.FC<ListDetailsProps> = ({id}) => {
       <Row gutter={24}>
         <Col xs={24} md={16}>
           <Card
-            title="Books in List"
+            title={`List: ${listName}`}
             bordered={false}
             style={{
               borderRadius: '8px',
@@ -198,8 +201,34 @@ const ListDetails: React.FC<ListDetailsProps> = ({id}) => {
               </Form.Item>
             </Form>
           </Card>
+          <Card
+            bordered={false}
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+              marginTop: '24px',
+            }}>
+            <Button
+              type="primary"
+              onClick={() => setExportModalVisible(true)}
+              block
+              style={{
+                borderRadius: '6px',
+                background: '#1890ff',
+                borderColor: '#1890ff',
+              }}>
+              Export List
+            </Button>
+          </Card>
         </Col>
       </Row>
+
+      <ExportListModal
+        visible={isExportModalVisible}
+        onClose={() => setExportModalVisible(false)}
+        listItems={items}
+        listName={listName}
+      />
     </div>
   );
 };
