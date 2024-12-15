@@ -7,6 +7,7 @@ import {
   BookOutlined,
   UnorderedListOutlined,
   EditOutlined as NotesOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons';
 
 const {Sider} = Layout;
@@ -35,6 +36,12 @@ const items = [
     icon: <LibraryOutlined />,
     label: 'Library',
     path: PathConstants.LIBRARY,
+  },
+  {
+    key: '5',
+    icon: <BarChartOutlined />,
+    label: 'Stats',
+    path: PathConstants.STATS,
   },
 ];
 

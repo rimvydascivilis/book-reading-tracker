@@ -2,6 +2,8 @@ package domain
 
 import (
 	"context"
+
+	"github.com/rimvydascivilis/book-tracker/backend/dto"
 )
 
 type UserRepository interface {
@@ -37,6 +39,8 @@ type ReadingRepository interface {
 type ProgressRepository interface {
 	GetTotalProgressByReadingID(ctx context.Context, readingID int64) (int64, error)
 	GetProgressByReadingAndDate(ctx context.Context, readingID int64, date string) (int64, error)
+	GetMonthlyProgress(ctx context.Context, userID, year int64) ([]dto.Progress, error)
+	GetDailyProgress(ctx context.Context, userID, year, month int64) ([]dto.Progress, error)
 	GetUserReadingIDsByPeriod(ctx context.Context, userID int64, period string) ([]int64, error)
 	CreateProgress(ctx context.Context, progressReq Progress) (Progress, error)
 }

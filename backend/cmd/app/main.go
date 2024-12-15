@@ -22,6 +22,7 @@ import (
 	"github.com/rimvydascivilis/book-tracker/backend/services/note"
 	"github.com/rimvydascivilis/book-tracker/backend/services/progress"
 	"github.com/rimvydascivilis/book-tracker/backend/services/reading"
+	"github.com/rimvydascivilis/book-tracker/backend/services/stat"
 	"github.com/rimvydascivilis/book-tracker/backend/services/user"
 	"github.com/rimvydascivilis/book-tracker/backend/services/validation"
 	"github.com/rimvydascivilis/book-tracker/backend/utils"
@@ -105,6 +106,7 @@ func main() {
 	progressSvc := progress.NewProgressService(progressRepo, readingRepo, validationSvc)
 	listSvc := list.NewListService(listRepo, listItemRepo, bookRepo, validationSvc)
 	noteSvc := note.NewNoteService(bookRepo, noteRepo, validationSvc)
+	statSvc := stat.NewStatService(progressRepo, goalRepo)
 
 	// Handlers
 	authH := rest.NewAuthHandler(authSvc)
@@ -114,6 +116,7 @@ func main() {
 	progressH := rest.NewProgressHandler(progressSvc)
 	listH := rest.NewListHandler(listSvc)
 	noteH := rest.NewNoteHandler(noteSvc)
+	statH := rest.NewStatHandler(statSvc)
 
 	// Route groups
 	api := e.Group("/api")
@@ -150,6 +153,8 @@ func main() {
 	authenticatedApi.GET("/notes/:book_id", noteH.GetNotes)      // /notes/1
 	authenticatedApi.POST("/notes/:book_id", noteH.CreateNote)   // /notes/1 {"page_number": 1, "content": "My note"}
 	authenticatedApi.DELETE("/notes/:note_id", noteH.DeleteNote) // /notes/1
+
+	authenticatedApi.GET("/stats/:frequency", statH.GetProgress) // /stats/monthly?year=2021&month=1
 
 	log.Fatal(e.Start(cfg.ServerAddr))
 }

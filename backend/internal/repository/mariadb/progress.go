@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/rimvydascivilis/book-tracker/backend/domain"
+	"github.com/rimvydascivilis/book-tracker/backend/dto"
 )
 
 type ProgressRepository struct {
@@ -91,6 +92,76 @@ WHERE reading_id = ?
 	}
 
 	return progress, nil
+}
+
+func (m *ProgressRepository) GetMonthlyProgress(ctx context.Context, userID, year int64) ([]dto.Progress, error) {
+	query := `
+SELECT
+	MONTH(reading_date) AS date,
+	COALESCE(SUM(pages), 0) AS pages
+FROM progress
+WHERE user_id = ?
+	AND YEAR(reading_date) = ?
+GROUP BY date
+`
+	stmt, err := m.DB.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(userID, year)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var monthlyProgress []dto.Progress
+	for rows.Next() {
+		var progress dto.Progress
+		err = rows.Scan(&progress.Date, &progress.Pages)
+		if err != nil {
+			return nil, err
+		}
+		monthlyProgress = append(monthlyProgress, progress)
+	}
+
+	return monthlyProgress, nil
+}
+
+func (m *ProgressRepository) GetDailyProgress(ctx context.Context, userID, year, month int64) ([]dto.Progress, error) {
+	query := `
+SELECT
+	DAY(reading_date) AS date,
+	COALESCE(SUM(pages), 0) AS pages
+FROM progress
+WHERE user_id = ?
+	AND YEAR(reading_date) = ?
+	AND MONTH(reading_date) = ?
+GROUP BY date
+`
+	stmt, err := m.DB.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(userID, year, month)
+	if err != nil {
+		return nil, err
+	}
+
+	var dailyProgress []dto.Progress
+	for rows.Next() {
+		var progress dto.Progress
+		err = rows.Scan(&progress.Date, &progress.Pages)
+		if err != nil {
+			return nil, err
+		}
+		dailyProgress = append(dailyProgress, progress)
+	}
+
+	return dailyProgress, nil
 }
 
 func (m *ProgressRepository) CreateProgress(ctx context.Context, progress domain.Progress) (domain.Progress, error) {

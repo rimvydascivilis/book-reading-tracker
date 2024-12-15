@@ -62,3 +62,7 @@ type NoteService interface {
 	CreateNote(ctx context.Context, userID, bookID int64, note dto.NoteRequest) (dto.NoteResponse, error)
 	DeleteNote(ctx context.Context, userID, noteID int64) error
 }
+
+type StatService interface {
+	GetProgress(ctx context.Context, userID, year, month int64, isMonthly bool) (dto.StatResponse, error)
+}
