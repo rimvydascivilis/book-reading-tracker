@@ -3,6 +3,7 @@ package progress
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/rimvydascivilis/book-tracker/backend/domain"
 	"github.com/rimvydascivilis/book-tracker/backend/dto"
@@ -23,6 +24,10 @@ func NewProgressService(repo domain.ProgressRepository, readingRepo domain.Readi
 }
 
 func (s *progressService) CreateProgress(ctx context.Context, userID, readingID int64, progressReq dto.ProgressRequest) (domain.Progress, error) {
+	if progressReq.Date.After(time.Now()) {
+		return domain.Progress{}, fmt.Errorf("%w: %s", domain.ErrValidation, "reading date cannot be in the future")
+	}
+
 	progress := domain.Progress{
 		ReadingID:   readingID,
 		UserID:      userID,
